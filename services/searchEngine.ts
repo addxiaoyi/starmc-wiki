@@ -1,9 +1,17 @@
 import { MOCK_PAGES } from '../constants';
+import { DOCS } from '../docs';
 
 type Posting = { doc: number; tf: number };
 type Index = Map<string, Posting[]>;
 
-const docs = MOCK_PAGES.map(p => ({ slug: p.slug, title: p.title, content: p.content }));
+const docs = MOCK_PAGES.map(p => {
+  const doc = DOCS.find(d => d.slug === p.slug);
+  return {
+    slug: p.slug,
+    title: p.title,
+    content: doc ? doc.content : ""
+  };
+});
 const N = docs.length;
 
 const tokenize = (text: string) => {
