@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search, Github, Terminal, Book, ChevronRight, ExternalLink as ExternalLinkIcon, Moon, Sun, Settings } from 'lucide-react';
 import { NAVIGATION, SERVER_NAME, OFFICIAL_WEBSITE } from '../constants';
- 
-import { search as doSearch } from '../services/searchEngine';
+
+const SearchModal = lazy(() => import('./SearchModal'));
 
 export const Header: React.FC<{ 
   onOpenSearch: () => void; 
@@ -24,7 +24,11 @@ export const Header: React.FC<{
             <Menu size={20} />
           </button>
           
-          <Link to="/" className="flex items-center gap-1.5">
+          <Link 
+            to="/" 
+            className="flex items-center gap-1.5"
+            onMouseEnter={() => import('../pages/Home')}
+          >
             <div className="bg-slate-900 text-white p-1.5 rounded-lg dark:bg-white dark:text-slate-900">
               <Terminal size={18} />
             </div>
@@ -40,6 +44,7 @@ export const Header: React.FC<{
             to="/admin/review"
             className="p-2 text-slate-600 bg-slate-100 rounded-lg dark:text-slate-300 dark:bg-slate-800 hover:text-blue-600 transition-colors"
             title="管理后台"
+            onMouseEnter={() => import('../pages/AdminReview')}
           >
             <Settings size={18} />
           </Link>
@@ -101,6 +106,11 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
                 <Link
                   to={item.path}
                   onClick={() => window.innerWidth < 1024 && onClose()}
+                  onMouseEnter={() => {
+                    if (item.path.startsWith('/wiki/')) {
+                      import('../pages/WikiPage');
+                    }
+                  }}
                   className={`
                     flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
                     ${isActive 
@@ -172,7 +182,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [showSyncNotify, setShowSyncNotify] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
-  const [query, setQuery] = useState('');
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
@@ -203,10 +212,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     console.log('Toggle Clicked, Current:', isDark);
     setIsDark(!isDark);
   };
-  const [page, setPage] = useState(1);
-  const [results, setResults] = useState<{ slug: string; title: string; score: number; snippet: string }[]>([]);
-  const [total, setTotal] = useState(0);
-  const pageSize = 20;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -262,15 +267,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const isAdminPage = location.pathname.toLowerCase().includes('admin');
 
-  useEffect(() => {
-    const id = setTimeout(() => {
-      const r = doSearch(query, page, pageSize);
-      setResults(r.results);
-      setTotal(r.total);
-    }, 100);
-    return () => clearTimeout(id);
-  }, [query, page]);
-
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950 transition-colors duration-300">
       {!isAdminPage && (
@@ -308,78 +304,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </main>
       </div>
 
-      {isSearchOpen && (
-        <div 
-          className="fixed inset-0 z-[110] flex items-start justify-center pt-2 sm:pt-20 px-2 sm:px-4 bg-slate-900/60 backdrop-blur-sm dark:bg-black/80"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setSearchOpen(false);
-          }}
-        >
-          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 dark:bg-slate-900 dark:border dark:border-slate-800 flex flex-col max-h-[85vh] sm:max-h-[70vh]" onClick={e => e.stopPropagation()}>
-            <div className="p-3 sm:p-4 border-b border-slate-100 flex items-center gap-3 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
-              <Search className="text-slate-400 flex-shrink-0" size={18} />
-              <input 
-                autoFocus
-                type="text" 
-                value={query}
-                onChange={e => { setQuery(e.target.value); setPage(1); }}
-                placeholder="搜索文档..." 
-                className="flex-1 outline-none text-sm sm:text-lg text-slate-900 placeholder:text-slate-300 bg-transparent dark:text-white dark:placeholder:text-slate-600 min-w-0"
-              />
-              <button onClick={() => setSearchOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 flex-shrink-0">
-                <X size={18} />
-              </button>
-            </div>
-            <div className="p-2 sm:p-4 overflow-y-auto flex-1">
-              {query.trim() === '' ? (
-                <div className="py-12 text-center text-slate-400">
-                  <div className="mb-3"><Book size={32} className="mx-auto opacity-20" /></div>
-                  <p className="text-sm font-medium">请输入关键词开始搜索</p>
-                </div>
-              ) : (
-                <>
-                  <ul className="space-y-2 sm:space-y-3">
-                    {results.map(r => (
-                      <li key={r.slug} className="p-2.5 sm:p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors dark:border-slate-800 dark:hover:bg-slate-800">
-                        <Link 
-                          to={`/wiki/${r.slug}`} 
-                          onClick={() => setSearchOpen(false)}
-                          className="font-black text-sm sm:text-base text-slate-900 dark:text-white block mb-1"
-                        >
-                          {r.title}
-                        </Link>
-                        <div className="text-[11px] sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2" dangerouslySetInnerHTML={{ __html: r.snippet }} />
-                      </li>
-                    ))}
-                    {results.length === 0 && (
-                      <li className="py-12 text-center text-slate-400 font-medium">无匹配结果</li>
-                    )}
-                  </ul>
-                  <div className="mt-4 sm:mt-6 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
-                    <div className="text-[9px] sm:text-xs text-slate-500 uppercase tracking-widest font-black">共 {total} 条</div>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <button 
-                        disabled={page <= 1}
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        className="px-2.5 py-1.5 text-[9px] sm:text-xs font-black rounded-lg border border-slate-200 disabled:opacity-30 dark:border-slate-800 dark:text-slate-400 transition-all active:scale-95"
-                      >
-                        上一页
-                      </button>
-                      <button 
-                        disabled={page * pageSize >= total}
-                        onClick={() => setPage(p => p + 1)}
-                        className="px-2.5 py-1.5 text-[9px] sm:text-xs font-black rounded-lg border border-slate-200 disabled:opacity-30 dark:border-slate-800 dark:text-slate-400 transition-all active:scale-95"
-                      >
-                        下一页
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <Suspense fallback={null}>
+        <SearchModal isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} />
+      </Suspense>
 
       {/* 同步提示浮窗 */}
       {showSyncNotify && (

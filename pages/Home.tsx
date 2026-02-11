@@ -112,12 +112,15 @@ const Home: React.FC = () => {
               专注于稳定、纯净生存与技术交流的 Minecraft 社区。在这里，每一行文档都为你指引归途。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-              <Link to="/wiki/intro" className={`flex-1 px-6 md:px-8 py-4 md:py-5 font-bold rounded-2xl flex items-center justify-between group hover:-translate-y-1 hover:shadow-2xl active:scale-[0.98] transition-all duration-300 ${
+              <Link 
+                to="/wiki/intro" 
+                onMouseEnter={() => import('./WikiPage')}
+                className={`flex-1 px-6 md:px-8 py-4 md:py-5 font-bold rounded-2xl flex items-center justify-between group hover:-translate-y-1 hover:shadow-2xl active:scale-[0.98] transition-all duration-300 ${
                 theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
                 theme === 'aura' ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/20' :
                 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-emerald-500/20'
               }`}>
-                开始探索
+                立即开始探索
                 <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <a href={OFFICIAL_WEBSITE} target="_blank" rel="noreferrer" className="px-6 md:px-8 py-4 md:py-5 bg-white border border-slate-200 text-slate-900 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-50 hover:-translate-y-1 hover:border-blue-200 active:scale-[0.98] transition-all duration-300 dark:bg-slate-950 dark:border-slate-800 dark:text-white dark:hover:bg-slate-900">
@@ -272,12 +275,12 @@ const Home: React.FC = () => {
           <div className="lg:col-span-3 space-y-4">
             <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">快速链接</h4>
             <ul className="space-y-2">
-              <li><Link to="/wiki/intro" className={`text-lg font-bold transition-colors ${
+              <li><Link to="/wiki/intro" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
                 theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
                 theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
                 'text-slate-900 dark:text-white hover:text-emerald-600'
               }`}>入门指南</Link></li>
-              <li><Link to="/wiki/rules" className={`text-lg font-bold transition-colors ${
+              <li><Link to="/wiki/rules" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
                 theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
                 theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
                 'text-slate-900 dark:text-white hover:text-emerald-600'

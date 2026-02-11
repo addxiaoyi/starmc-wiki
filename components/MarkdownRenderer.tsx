@@ -38,7 +38,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       info: { icon: Info, color: 'text-blue-600', bg: 'bg-blue-50/50', border: 'border-blue-200', darkBg: 'dark:bg-blue-950/20', darkBorder: 'dark:border-blue-900/50', darkText: 'dark:text-blue-400' },
       warning: { icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50/50', border: 'border-amber-200', darkBg: 'dark:bg-amber-950/20', darkBorder: 'dark:border-amber-900/50', darkText: 'dark:text-amber-400' },
       danger: { icon: AlertCircle, color: 'text-rose-600', bg: 'bg-rose-50/50', border: 'border-rose-200', darkBg: 'dark:bg-rose-950/20', darkBorder: 'dark:border-rose-900/50', darkText: 'dark:text-rose-400' },
-    }[type] || { icon: Info, color: 'text-slate-600', bg: 'bg-slate-50/50', border: 'border-slate-200', darkBg: 'dark:bg-slate-900/50', darkBorder: 'dark:border-slate-800', darkText: 'dark:text-slate-400' };
+    }[type as keyof typeof config] || { icon: Info, color: 'text-slate-600', bg: 'bg-slate-50/50', border: 'border-slate-200', darkBg: 'dark:bg-slate-900/50', darkBorder: 'dark:border-slate-800', darkText: 'dark:text-slate-400' };
 
     const Icon = config.icon;
 
@@ -118,7 +118,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     }
 
     // Handle Images
-    const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
+  const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
     if (imgMatch) {
       const alt = imgMatch[1];
       const src = imgMatch[2];
@@ -128,7 +128,13 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
             className="relative cursor-zoom-in overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900"
             onClick={() => setZoomImage(src)}
           >
-            <img src={src} alt={alt} className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.02]" />
+            <img 
+              src={src} 
+              alt={alt} 
+              loading="lazy"
+              decoding="async"
+              className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.02]" 
+            />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
               <div className="bg-white/90 p-2 rounded-full shadow-lg dark:bg-slate-800/90 dark:text-white">
                 <ZoomIn size={20} />
