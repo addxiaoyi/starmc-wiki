@@ -109,7 +109,7 @@ const Home: React.FC = () => {
               theme === 'aura' ? 'border-blue-600 dark:border-blue-400' :
               'border-emerald-600 dark:border-emerald-400'
             }`}>
-              专注于稳定、纯净生存与技术交流的 Minecraft 社区。在这里，每一行文档都为你指引归途。
+              专注于稳定、纯净生存与技术交流的 Minecraft 社区。在这里，每一行文档都为你指引归途764970620qq群。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Link to="/wiki/intro" className={`flex-1 px-6 md:px-8 py-4 md:py-5 font-bold rounded-2xl flex items-center justify-between group hover:-translate-y-1 hover:shadow-2xl active:scale-[0.98] transition-all duration-300 ${
@@ -136,8 +136,8 @@ const Home: React.FC = () => {
         }`}>
           {[
             { 
-              title: "纯净生存", 
-              desc: "回归最本真的游戏体验，无繁琐插件，唯有协作与创造。",
+              title: "自由生存", 
+              desc: "回归最本真的游戏体验，自由选择玩法，体会协作与创造。",
               icon: <Zap className={theme === 'voxel' ? 'text-emerald-500' : 'text-blue-500'} />,
               bg: theme === 'aura' ? 'bg-white/70 dark:bg-slate-950/70' : 'bg-white dark:bg-slate-950'
             },
