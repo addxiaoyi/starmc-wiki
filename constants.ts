@@ -57,7 +57,6 @@ export const NAVIGATION: NavItem[] = [
     items: [
       { title: "贡献指南", path: "/wiki/contributing" },
       { title: "基础模板", path: "/wiki/template" },
-      { title: "变更历史 (Real-time)", path: "/history" },
     ]
   }
 ];
