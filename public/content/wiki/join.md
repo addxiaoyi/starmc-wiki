@@ -23,12 +23,12 @@ ICON: 🚀
 - **Java Edition 1.21.x**: 这是获得最完美方块渲染和光影效果的唯一选择。
 
 ### 2. Java 环境
-请确保您的电脑安装了 **Java 17** 或更高版本。
+请确保您的电脑安装了 **Java 17** 或更高版本。(推荐java21)
 - 如果您使用的是旧版 Java 8，游戏将无法在 1.21 版本下启动。
-- 您可以从我们的官方群文件或 [Adoptium](https://adoptium.net/zh-CN/temurin/releases/?version=17) 下载最新的 OpenJDK 17。
+- 您可以从我们的官方群文件或 [Adoptium](https://adoptium.net/zh-CN/temurin/releases/?version=21) 下载最新的 OpenJDK 21
 
 ## 第三部分：详细连接步骤（按启动器分类）
-
+764970620服务器群
 ### 方案 A：使用 PCL2 启动器（最推荐）
 1. 打开 PCL2，点击“多人游戏”。
 2. 点击“添加服务器”，在“服务器地址”栏填入 `mc.star-mc.top`。
