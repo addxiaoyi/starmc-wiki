@@ -32,6 +32,7 @@ export const NAVIGATION: NavItem[] = [
       { title: "基础指令", path: "/wiki/commands" },
       { title: "领地系统", path: "/wiki/residence" },
       { title: "经济与贸易", path: "/wiki/economy" },
+      { title: "附魔功能指南", path: "/wiki/enchantments_guide" },
     ]
   },
   {
@@ -146,6 +147,15 @@ export const MOCK_PAGES: WikiPage[] = [
     category: "游戏机制",
     lastUpdated: "2026-02-10",
     content: "",
+  },
+  {
+    id: "enchantments_guide",
+    slug: "enchantments_guide",
+    title: "附魔功能指南",
+    category: "玩家教程",
+    lastUpdated: "2026-03-07",
+    content: "",
+    icon: "✨"
   },
   {
     id: "redstone",

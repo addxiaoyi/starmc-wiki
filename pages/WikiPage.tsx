@@ -211,8 +211,8 @@ const WikiPage: React.FC = () => {
     >
       {/* 拖拽上传覆盖层 */}
       {isDragging && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-blue-600/20 backdrop-blur-sm border-4 border-dashed border-blue-500 m-4 rounded-[2.5rem] pointer-events-none animate-in fade-in duration-200">
-          <div className="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center gap-4 dark:bg-slate-900">
+        <div className="fixed inset-0 z-200 flex items-center justify-center bg-blue-600/20 backdrop-blur-sm border-4 border-dashed border-blue-500 m-4 rounded-[2.5rem] pointer-events-none animate-in fade-in duration-200">
+          <div className="bg-white p-8 rounded-4xl shadow-2xl flex flex-col items-center gap-4 dark:bg-slate-900">
             <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center dark:bg-blue-900/30 dark:text-blue-400">
               <Upload size={32} />
             </div>
@@ -251,7 +251,7 @@ const WikiPage: React.FC = () => {
                 </div>
               )}
             </div>
-            <h1 className="text-3xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight dark:text-white break-words mb-4">
+            <h1 className="text-3xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight dark:text-white wrap-break-word mb-4">
               {displayInfo?.title || slug}
             </h1>
           </header>
@@ -295,7 +295,7 @@ const WikiPage: React.FC = () => {
                 <ArrowLeft size={16} />
                 返回首页
               </Link>
-              {slug === 'template' && (
+              {slug === 'template' && isAdmin && (
                 <button 
                   onClick={() => {
                     // 使用 fetch 获取原始文件内容，这样下载的文件会包含最新的注释元数据
@@ -333,15 +333,17 @@ const WikiPage: React.FC = () => {
                 </button>
               )}
               
-              <a 
-                href="https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-900"
-              >
-                <Upload size={16} />
-                上传文档
-              </a>
+              {isAdmin && (
+                <a 
+                  href="https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-900"
+                >
+                  <Upload size={16} />
+                  上传文档
+                </a>
+              )}
             </div>
             
             <div className="flex items-center justify-between sm:justify-end gap-2">
@@ -359,40 +361,46 @@ const WikiPage: React.FC = () => {
                   )}
                 </button>
                 
-                <Link 
-                  to="/history"
-                  className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
-                  title="全站变更历史"
-                >
-                  <History size={18} />
-                </Link>
-                <a 
-                  href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/commits/branch/main/public/content/wiki/${slug}.md`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
-                  title="源码历史"
-                >
-                  <ExternalLinkIcon size={18} />
-                </a>
+                {isAdmin && (
+                  <>
+                    <Link 
+                      to="/history"
+                      className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
+                      title="全站变更历史"
+                    >
+                      <History size={18} />
+                    </Link>
+                    <a 
+                      href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/commits/branch/main/public/content/wiki/${slug}.md`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
+                      title="源码历史"
+                    >
+                      <ExternalLinkIcon size={18} />
+                    </a>
+                  </>
+                )}
               </div>
 
-              <a 
-                href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki/${slug}.md`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all dark:bg-blue-950 dark:text-blue-400 dark:hover:bg-blue-900"
-              >
-                <Edit3 size={16} />
-                编辑 (MD)
-              </a>
+              {isAdmin && (
+                <a 
+                  href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki/${slug}.md`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all dark:bg-blue-950 dark:text-blue-400 dark:hover:bg-blue-900"
+                >
+                  <Edit3 size={16} />
+                  编辑 (MD)
+                </a>
+              )}
             </div>
           </footer>
         </div>
 
         {/* Table of Contents - Sticky Sidebar */}
         {toc.length > 0 && (
-          <aside className="hidden lg:block w-64 flex-shrink-0">
+          <aside className="hidden lg:block w-64 shrink-0">
             <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-4">
               <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest mb-6 dark:text-slate-600">
                 <List size={14} />

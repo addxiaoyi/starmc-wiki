@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Github, Terminal, Book, ChevronRight, ExternalLink as ExternalLinkIcon, Moon, Sun, Settings } from 'lucide-react';
-import { NAVIGATION, SERVER_NAME, OFFICIAL_WEBSITE } from '../constants';
+import { Menu, X, Search, Github as GithubIcon, Terminal, ChevronRight, ExternalLink as ExternalLinkIcon, Moon, Sun, Settings } from 'lucide-react';
+import { NAVIGATION, OFFICIAL_WEBSITE } from '../constants';
 
 const SearchModal = lazy(() => import('./SearchModal'));
 
@@ -10,9 +10,10 @@ export const Header: React.FC<{
   onOpenSearch: () => void; 
   onToggleSidebar: () => void;
   isDark: boolean; 
-  toggleDark: (e: React.MouseEvent) => void 
-}> = ({ onOpenSearch, onToggleSidebar, isDark, toggleDark }) => (
-    <header className="sticky top-0 z-[100] w-full border-b border-slate-200 bg-white/80 backdrop-blur-md dark:bg-slate-950/80 dark:border-slate-800">
+  toggleDark: (e: React.MouseEvent) => void;
+  isAdmin: boolean;
+}> = ({ onOpenSearch, onToggleSidebar, isDark, toggleDark, isAdmin }) => (
+    <header className="sticky top-0 z-100 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md dark:bg-slate-950/80 dark:border-slate-800">
       <div className="mx-auto flex h-16 max-w-8xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           {/* 移动端菜单按钮 */}
@@ -38,20 +39,22 @@ export const Header: React.FC<{
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           {/* 管理入口按钮 */}
-          <Link
-            to="/admin/review"
-            className="p-2 text-slate-600 bg-slate-100 rounded-lg dark:text-slate-300 dark:bg-slate-800 hover:text-blue-600 transition-colors"
-            title="管理后台"
-            onMouseEnter={() => import('../pages/AdminReview')}
-          >
-            <Settings size={18} />
-          </Link>
+          {isAdmin && (
+            <Link
+              to="/admin/review"
+              className="p-2 text-slate-600 bg-slate-100 rounded-lg dark:text-slate-300 dark:bg-slate-800 hover:text-blue-600 transition-colors"
+              title="管理后台"
+              onMouseEnter={() => import('../pages/AdminReview')}
+            >
+              <Settings size={18} />
+            </Link>
+          )}
           {/* 移动端搜索按钮 */}
           <button
             onClick={(e) => { e.preventDefault(); onOpenSearch(); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-blue-600 bg-blue-50 border border-blue-200 rounded-full dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-700 hidden transition-all active:scale-95"
+            className="hidden items-center gap-1.5 px-3 py-1.5 text-blue-600 bg-blue-50 border border-blue-200 rounded-full dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-700 transition-all active:scale-95"
           >
             <Search size={14} />
             <span className="text-xs font-black">搜索</span>
@@ -105,7 +108,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
               {item.path ? (
                 <Link
                   to={item.path}
-                  onClick={() => window.innerWidth < 1024 && onClose()}
+                  onClick={() => globalThis.innerWidth < 1024 && onClose()}
                   onMouseEnter={() => {
                     if (item.path.startsWith('/wiki/')) {
                       import('../pages/WikiPage');
@@ -142,8 +145,17 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
       {/* 移动端侧边栏遮罩 */}
       {isOpen && (
         <div 
+          role="button"
+          tabIndex={0}
           className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm lg:hidden animate-in fade-in duration-300" 
           onClick={onClose}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClose();
+            }
+          }}
+          aria-label="关闭菜单"
         />
       )}
       <aside className={`
@@ -183,7 +195,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [showSyncNotify, setShowSyncNotify] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
   const [isDark, setIsDark] = useState(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof globalThis.window !== 'undefined') {
       const saved = localStorage.getItem('theme');
       if (saved) return saved === 'dark';
       // 默认返回 false，即亮色模式
@@ -223,8 +235,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         setSearchOpen(false);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => globalThis.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Scroll lock for search modal
@@ -247,7 +259,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         minute: '2-digit',
         second: '2-digit'
       });
-      window.dispatchEvent(new CustomEvent('sync-notify', { 
+      globalThis.dispatchEvent(new CustomEvent('sync-notify', { 
         detail: `系统已同步 [${now}]` 
       }));
     }, 1000);
@@ -258,14 +270,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       // 动画总时长 2.6s，留一点余量
       setTimeout(() => setShowSyncNotify(false), 2700);
     };
-    window.addEventListener('sync-notify', handleSyncNotify);
+    globalThis.addEventListener('sync-notify', handleSyncNotify);
     return () => {
-      window.removeEventListener('sync-notify', handleSyncNotify);
+      globalThis.removeEventListener('sync-notify', handleSyncNotify);
       clearTimeout(timer);
     };
   }, []);
 
   const isAdminPage = location.pathname.toLowerCase().includes('admin');
+  const isAdmin = location.search.includes('admin=true') || localStorage.getItem('starmc_admin') === 'true';
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950 transition-colors duration-300">
@@ -275,6 +288,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
           isDark={isDark} 
           toggleDark={toggleDark} 
+          isAdmin={isAdmin}
         />
       )}
       
@@ -310,10 +324,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       {/* 同步提示浮窗 */}
       {showSyncNotify && (
-        <div className="fixed top-6 right-6 z-[999] pointer-events-none">
+        <div className="fixed top-6 right-6 z-999 pointer-events-none">
           <div className="bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-3 animate-sms-float dark:bg-slate-900/90 dark:border-slate-800">
             <div className="bg-blue-500 p-1.5 rounded-lg text-white">
-              <Github size={16} />
+              <GithubIcon size={16} />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold text-slate-900 dark:text-white">
