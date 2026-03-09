@@ -1,14 +1,14 @@
 <!-- 
- TITLE: 星露百科 Wiki 
+ TITLE: 舵星归途 Wiki 
  CATEGORY: 首页 
  LAST_UPDATED: 2026-03-09 
  PARENT: 
  ICON: 🏠 
  --> 
 
-# 🌟 StarMC 百科
+# 🌟 舵星归途 Wiki
 
-StarMC 官方百科，涵盖从入服指南到进阶机制的所有内容
+舵星归途 StarMC 官方百科，涵盖从入服指南到进阶机制的所有内容
 
 > **新手建议**
 > 刚来的玩家建议先看 [加入教程](./join) 和 [服务器规范](./rules)

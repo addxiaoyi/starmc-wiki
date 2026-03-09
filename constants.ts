@@ -116,7 +116,7 @@ export const MOCK_PAGES: WikiPage[] = [
   {
     id: "index",
     slug: "index",
-    title: "星露百科 Wiki",
+    title: "舵星归途 Wiki",
     category: "首页",
     lastUpdated: "2026-03-09",
     content: "",
