@@ -2,12 +2,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Navigate, Link, useLocation } from 'react-router-dom';
 import { ExternalLink as ExternalLinkIcon, Calendar, Tag, ChevronRight, ArrowLeft, Share2, Edit3, Loader2, Download, Layers, List, History, Upload } from 'lucide-react';
-import { MOCK_PAGES } from '../constants';
+import { MOCK_PAGES, NAVIGATION } from '../constants';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { WikiPage as WikiPageType } from '../types';
 
 const WikiPage: React.FC = () => {
-  const { slug } = useParams();
+  const { "*": slug } = useParams();
   const location = useLocation();
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -61,6 +61,29 @@ const WikiPage: React.FC = () => {
     if (file) handleFileUpload(file);
   };
 
+  const [activeId, setActiveId] = useState<string>('');
+
+  // 监听滚动更新活跃目录项
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '-10% 0% -80% 0%' }
+    );
+
+    toc.forEach((item) => {
+      const element = document.getElementById(item.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, [toc]);
+
   // 解析 MD 中的元数据
   const parseMetadata = (text: string) => {
     const metaMatch = text.match(/<!--([\s\S]*?)-->/);
@@ -88,6 +111,8 @@ const WikiPage: React.FC = () => {
       metadata
     };
   };
+
+  const [showMobileToc, setShowMobileToc] = useState(false);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -149,7 +174,8 @@ const WikiPage: React.FC = () => {
   // 管理员权限检查
   const isAdmin = useMemo(() => {
     return new URLSearchParams(location.search).get('admin') === 'true' || 
-           localStorage.getItem('starmc_admin') === 'true';
+           localStorage.getItem('starmc_admin') === 'true' ||
+           window.location.hostname === 'localhost';
   }, [location.search]);
 
   const handleShare = async () => {
@@ -173,6 +199,31 @@ const WikiPage: React.FC = () => {
       }
     }
   };
+
+  // 计算上下页导航
+  const navigationLinks = useMemo(() => {
+    const allItems: { title: string; path: string }[] = [];
+    NAVIGATION.forEach(section => {
+      section.items.forEach(item => {
+        if (item.path.startsWith('/wiki/')) {
+          allItems.push({ title: item.title, path: item.path });
+        }
+        if (item.items) {
+          item.items.forEach(subItem => {
+            if (subItem.path.startsWith('/wiki/')) {
+              allItems.push({ title: subItem.title, path: subItem.path });
+            }
+          });
+        }
+      });
+    });
+
+    const currentIndex = allItems.findIndex(item => item.path === `/wiki/${slug}`);
+    return {
+      prev: currentIndex > 0 ? allItems[currentIndex - 1] : null,
+      next: currentIndex < allItems.length - 1 ? allItems[currentIndex + 1] : null
+    };
+  }, [slug]);
 
   if (!basePageInfo && !loading && !meta.title) {
     return <Navigate to="/" replace />;
@@ -218,6 +269,59 @@ const WikiPage: React.FC = () => {
             </div>
             <p className="text-xl font-black text-slate-900 dark:text-white">松开以提交新文档</p>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">文件将直接发送至管理员审核后台</p>
+          </div>
+        </div>
+      )}
+      
+      {/* 手机端目录悬浮按钮 */}
+      {toc.length > 0 && (
+        <button 
+          onClick={() => setShowMobileToc(!showMobileToc)}
+          className="fixed bottom-6 right-6 z-50 lg:hidden w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-all active:scale-95"
+        >
+          <List size={24} />
+        </button>
+      )}
+
+      {/* 手机端目录抽屉 */}
+      {showMobileToc && (
+        <div className="fixed inset-0 z-[60] lg:hidden">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowMobileToc(false)} />
+          <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[2.5rem] p-8 max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <List size={20} className="text-indigo-500" />
+                目录 / Contents
+              </h3>
+              <button onClick={() => setShowMobileToc(false)} className="text-slate-400 hover:text-slate-600 p-2">
+                <ChevronRight size={24} className="rotate-90" />
+              </button>
+            </div>
+            <ul className="space-y-4">
+              {toc.map((item, i) => (
+                <li key={i} className={item.level === 3 ? 'ml-6' : ''}>
+                  <a 
+                    href={`#${item.id}`}
+                    className={`block text-base font-bold transition-all py-2 px-4 rounded-xl ${
+                      activeId === item.id 
+                        ? 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-950/50' 
+                        : 'text-slate-600 dark:text-slate-400'
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowMobileToc(false);
+                      const target = document.getElementById(item.id);
+                      if (target) {
+                        const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                      }
+                    }}
+                  >
+                    {item.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       )}
@@ -286,114 +390,147 @@ const WikiPage: React.FC = () => {
           )}
 
           {/* Page Footer / Controls */}
-          <footer className="mt-16 lg:mt-20 pt-8 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6 dark:border-slate-800">
-            <div className="flex flex-wrap items-center gap-2 lg:gap-3">
-              <Link 
-                to="/" 
-                className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all dark:text-slate-400 dark:bg-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
-              >
-                <ArrowLeft size={16} />
-                返回首页
-              </Link>
-              {slug === 'template' && isAdmin && (
-                <button 
-                  onClick={() => {
-                    // 使用 fetch 获取原始文件内容，这样下载的文件会包含最新的注释元数据
-                    const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-                    const filePath = `${baseUrl}/content/wiki/template.md`;
-                    
-                    fetch(filePath)
-                      .then(res => res.text())
-                      .then(text => {
-                        const blob = new Blob([text], { type: 'text/markdown' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'template.md';
-                        a.click();
-                        URL.revokeObjectURL(url);
-                      })
-                      .catch(err => {
-                        console.error('Download failed:', err);
-                        // 降级方案：手动生成
-                        const fallbackContent = `<!--\nTITLE: 页面标题\nCATEGORY: 侧边栏分类\nLAST_UPDATED: ${new Date().toISOString().split('T')[0]}\nPARENT: \nICON: 📄\n-->\n\n# 新页面标题\n\n在此编写内容...`;
-                        const blob = new Blob([fallbackContent], { type: 'text/markdown' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'template.md';
-                        a.click();
-                        URL.revokeObjectURL(url);
-                      });
-                  }}
-                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all dark:bg-indigo-950 dark:text-indigo-400 dark:hover:bg-indigo-900"
-                >
-                  <Download size={16} />
-                  下载模板
-                </button>
-              )}
-              
-              {isAdmin && (
-                <a 
-                  href="https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-900"
-                >
-                  <Upload size={16} />
-                  上传文档
-                </a>
-              )}
-            </div>
-            
-            <div className="flex items-center justify-between sm:justify-end gap-2">
-              <div className="flex items-center gap-1">
-                <button 
-                  className="p-2 text-slate-400 hover:text-slate-900 transition-colors relative dark:hover:text-white" 
-                  title="分享"
-                  onClick={handleShare}
-                >
-                  <Share2 size={18} />
-                  {copied && (
-                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-700 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap dark:bg-slate-600">
-                      已复制!
+          <footer className="mt-16 lg:mt-20 pt-8 border-t border-slate-100 dark:border-slate-800">
+            {/* 上下页导航 */}
+            {(navigationLinks.prev || navigationLinks.next) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+                {navigationLinks.prev ? (
+                  <Link 
+                    to={navigationLinks.prev.path}
+                    className="flex flex-col gap-2 p-6 bg-slate-50 border border-slate-100 rounded-3xl hover:border-blue-500 hover:shadow-md transition-all dark:bg-slate-900/50 dark:border-slate-800"
+                  >
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">上一篇</span>
+                    <span className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                      <ArrowLeft size={20} />
+                      {navigationLinks.prev.title}
                     </span>
-                  )}
-                </button>
+                  </Link>
+                ) : <div />}
                 
-                {isAdmin && (
-                  <>
-                    <Link 
-                      to="/history"
-                      className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
-                      title="全站变更历史"
-                    >
-                      <History size={18} />
-                    </Link>
-                    <a 
-                      href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/commits/branch/main/public/content/wiki/${slug}.md`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
-                      title="源码历史"
-                    >
-                      <ExternalLinkIcon size={18} />
-                    </a>
-                  </>
+                {navigationLinks.next && (
+                  <Link 
+                    to={navigationLinks.next.path}
+                    className="flex flex-col gap-2 p-6 bg-slate-50 border border-slate-100 rounded-3xl hover:border-blue-500 hover:shadow-md transition-all items-end text-right dark:bg-slate-900/50 dark:border-slate-800"
+                  >
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">下一篇</span>
+                    <span className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                      {navigationLinks.next.title}
+                      <ChevronRight size={20} />
+                    </span>
+                  </Link>
                 )}
               </div>
+            )}
 
-              {isAdmin && (
-                <a 
-                  href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki/${slug}.md`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all dark:bg-blue-950 dark:text-blue-400 dark:hover:bg-blue-900"
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div className="flex flex-wrap items-center gap-2 lg:gap-3">
+                <Link 
+                  to="/" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all dark:text-slate-400 dark:bg-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
                 >
-                  <Edit3 size={16} />
-                  编辑 (MD)
-                </a>
-              )}
+                  <ArrowLeft size={16} />
+                  返回首页
+                </Link>
+                {slug === 'template' && isAdmin && (
+                  <button 
+                    onClick={() => {
+                      // 使用 fetch 获取原始文件内容，这样下载的文件会包含最新的注释元数据
+                      const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+                      const filePath = `${baseUrl}/content/wiki/template.md`;
+                      
+                      fetch(filePath)
+                        .then(res => res.text())
+                        .then(text => {
+                          const blob = new Blob([text], { type: 'text/markdown' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = 'template.md';
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        })
+                        .catch(err => {
+                          console.error('Download failed:', err);
+                          // 降级方案：手动生成
+                          const fallbackContent = `<!--\nTITLE: 页面标题\nCATEGORY: 侧边栏分类\nLAST_UPDATED: ${new Date().toISOString().split('T')[0]}\nPARENT: \nICON: 📄\n-->\n\n# 新页面标题\n\n在此编写内容...`;
+                          const blob = new Blob([fallbackContent], { type: 'text/markdown' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = 'template.md';
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        });
+                    }}
+                    className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all dark:bg-indigo-950 dark:text-indigo-400 dark:hover:bg-indigo-900"
+                  >
+                    <Download size={16} />
+                    下载模板
+                  </button>
+                )}
+                
+                {isAdmin && (
+                  <a 
+                    href="https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-900"
+                  >
+                    <Upload size={16} />
+                    上传文档
+                  </a>
+                )}
+              </div>
+              
+              <div className="flex items-center justify-between sm:justify-end gap-2">
+                <div className="flex items-center gap-1">
+                  <button 
+                    className="p-2 text-slate-400 hover:text-slate-900 transition-colors relative dark:hover:text-white" 
+                    title="分享"
+                    onClick={handleShare}
+                  >
+                    <Share2 size={18} />
+                    {copied && (
+                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-700 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap dark:bg-slate-600">
+                        已复制!
+                      </span>
+                    )}
+                  </button>
+                  
+                  {isAdmin && (
+                    <>
+                      <Link 
+                        to="/history"
+                        className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
+                        title="全站变更历史"
+                      >
+                        <History size={18} />
+                      </Link>
+                      <a 
+                        href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/commits/branch/main/public/content/wiki/${slug}.md`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
+                        title="源码历史"
+                      >
+                        <ExternalLinkIcon size={18} />
+                      </a>
+                    </>
+                  )}
+                </div>
+
+                {isAdmin && (
+                  <a 
+                    href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki/${slug}.md`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all dark:bg-blue-950 dark:text-blue-400 dark:hover:bg-blue-900"
+                  >
+                    <Edit3 size={16} />
+                    编辑 (MD)
+                  </a>
+                )}
+              </div>
             </div>
           </footer>
         </div>
@@ -414,10 +551,18 @@ const WikiPage: React.FC = () => {
                   >
                     <a 
                       href={`#${item.id}`}
-                      className="block text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors leading-relaxed dark:text-slate-400 dark:hover:text-indigo-400"
+                      className={`block text-sm font-medium transition-all leading-relaxed py-1 px-2 rounded-lg ${
+                        activeId === item.id 
+                          ? 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-950/50' 
+                          : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+                      }`}
                       onClick={(e) => {
                         e.preventDefault();
-                        document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                        const target = document.getElementById(item.id);
+                        if (target) {
+                          const top = target.getBoundingClientRect().top + window.pageYOffset - 100;
+                          window.scrollTo({ top, behavior: 'smooth' });
+                        }
                       }}
                     >
                       {item.text}

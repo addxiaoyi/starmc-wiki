@@ -36,7 +36,7 @@ const App: React.FC = () => {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/wiki/:slug" element={<WikiPage />} />
+              <Route path="/wiki/*" element={<WikiPage />} />
               <Route path="/admin/review" element={<AdminReview />} />
               <Route path="/admin" element={<Navigate to="/admin/review" replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />

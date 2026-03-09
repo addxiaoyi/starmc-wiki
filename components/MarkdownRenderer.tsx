@@ -176,15 +176,22 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     // Handle Lists
     if (line.startsWith('- ') || line.startsWith('* ')) {
       const formatted = line.slice(2).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                   .replace(/\`(.*?)\`/g, '<code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
+                                   .replace(/\\`(.*?)\\`/g, '<code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
                                    .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
-                                     const finalUrl = url.startsWith('/wiki/') ? `#${url}` : url;
+                                     let finalUrl = url;
+                                     if (url.startsWith('./')) {
+                                       // 处理相对路径，例如 [text](./core/Page) -> #/wiki/core/Page
+                                       const cleanUrl = url.replace('./', '');
+                                       finalUrl = `#/wiki/${cleanUrl}`;
+                                     } else if (url.startsWith('/wiki/')) {
+                                       finalUrl = `#${url}`;
+                                     }
                                      return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
                                    });
       elements.push(
-        <div key={i} className="flex gap-3 mb-2 ml-4">
-          <span className="text-slate-300 select-none dark:text-slate-600">•</span>
-          <span className="text-slate-600 leading-relaxed dark:text-slate-400" dangerouslySetInnerHTML={{ __html: formatted }} />
+        <div key={i} className="flex gap-3 mb-3 ml-4">
+          <span className="text-indigo-400 select-none dark:text-indigo-600 font-black mt-1">•</span>
+          <span className="text-slate-700 leading-relaxed dark:text-slate-300 text-lg" dangerouslySetInnerHTML={{ __html: formatted }} />
         </div>
       );
       continue;
@@ -260,11 +267,17 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
         .replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 bg-slate-100 text-indigo-600 rounded-md font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
         .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
-          const finalUrl = url.startsWith('/wiki/') ? `#${url}` : url;
+          let finalUrl = url;
+          if (url.startsWith('./')) {
+            const cleanUrl = url.replace('./', '');
+            finalUrl = `#/wiki/${cleanUrl}`;
+          } else if (url.startsWith('/wiki/')) {
+            finalUrl = `#${url}`;
+          }
           return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
         });
       
-      elements.push(<p key={i} className="text-slate-600 leading-relaxed mb-6 dark:text-slate-400" dangerouslySetInnerHTML={{ __html: processedLine }} />);
+      elements.push(<p key={i} className="text-slate-700 leading-relaxed mb-6 dark:text-slate-300 text-lg" dangerouslySetInnerHTML={{ __html: processedLine }} />);
     }
   }
 
@@ -275,7 +288,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       {/* Image Zoom Overlay */}
       {zoomImage && (
         <div 
-          className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
+          className="fixed inset-0 z-100 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
           onClick={() => setZoomImage(null)}
         >
           <button className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">

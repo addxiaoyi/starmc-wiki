@@ -48,7 +48,7 @@ const Home: React.FC = () => {
         {theme === 'blueprint' && (
           <div className="absolute inset-0 opacity-[0.15] dark:opacity-[0.07]" 
                style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
-            <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[64px_64px]"></div>
           </div>
         )}
         
@@ -67,9 +67,9 @@ const Home: React.FC = () => {
         )}
       </div>
 
-      <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12 lg:pt-20">
+      <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12">
         {/* Hero Section - Magazine Layout */}
-        <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12 lg:mb-24 lg:mb-40">
+        <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12 lg:mb-24">
           <div className="lg:col-span-8 space-y-4 lg:space-y-8">
             <div className={`inline-flex items-center gap-2 lg:gap-3 px-2 lg:px-3 py-1 rounded-full animate-in fade-in duration-1000 ${
               theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border border-slate-800' :
@@ -93,7 +93,7 @@ const Home: React.FC = () => {
             
             <h1 className="text-[clamp(2rem,12vw,8rem)] font-black tracking-tighter leading-[0.85] text-slate-900 dark:text-white animate-in fade-in slide-in-from-left-8 duration-1000 delay-150">
               {SERVER_NAME.split(' ')[0]}<br/>
-              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
+              <span className={`text-transparent bg-clip-text bg-linear-to-r ${
                 theme === 'blueprint' ? 'from-slate-700 to-slate-900 dark:from-slate-200 dark:to-white' :
                 theme === 'aura' ? 'from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400' :
                 'from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400'
@@ -109,11 +109,11 @@ const Home: React.FC = () => {
               theme === 'aura' ? 'border-blue-600 dark:border-blue-400' :
               'border-emerald-600 dark:border-emerald-400'
             }`}>
-              专注于稳定、纯净生存与技术交流的 Minecraft 社区。在这里，每一行文档都为你指引归途764970620qq群。
+              这里是 StarMC 的文档中心，从硬核生电、休闲农场到社区社交，你想知道的都在这里。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Link 
-                to="/wiki/intro" 
+                to="/wiki/index" 
                 onMouseEnter={() => import('./WikiPage')}
                 className={`flex-1 px-6 md:px-8 py-4 md:py-5 font-bold rounded-2xl flex items-center justify-between group hover:-translate-y-1 hover:shadow-2xl active:scale-[0.98] transition-all duration-300 ${
                 theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
@@ -132,33 +132,33 @@ const Home: React.FC = () => {
         </header>
 
         {/* Featured Section - Grid System */}
-        <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px rounded-[2rem] md:rounded-[3rem] overflow-hidden border mb-20 md:mb-32 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 ${
+        <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px rounded-4xl md:rounded-[3rem] overflow-hidden border mb-20 md:mb-32 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 ${
           theme === 'blueprint' ? 'bg-slate-200 border-slate-200 dark:bg-slate-800 dark:border-slate-800' :
           theme === 'aura' ? 'bg-slate-200/50 border-slate-200/50 backdrop-blur-xl dark:bg-slate-800/50 dark:border-slate-800/50' :
           'bg-stone-200 border-stone-200 dark:bg-slate-800 dark:border-slate-800'
         }`}>
           {[
             { 
-              title: "自由生存", 
-              desc: "回归最本真的游戏体验，自由选择玩法，体会协作与创造。",
+              title: "生存与经营", 
+              desc: "纯净生存底色，配合农场、技能等长期玩法，让生存不再只有挖矿",
               icon: <Zap className={theme === 'voxel' ? 'text-emerald-500' : 'text-blue-500'} />,
               bg: theme === 'aura' ? 'bg-white/70 dark:bg-slate-950/70' : 'bg-white dark:bg-slate-950'
             },
             { 
-              title: "技术社区", 
-              desc: "汇聚红石大牛与生电爱好者，共同挑战原版生存极限。",
-              icon: <Cpu className={theme === 'voxel' ? 'text-teal-500' : 'text-indigo-500'} />,
+              title: "深度探索", 
+              desc: "任务系统与世界资源点分布，给喜欢跑图和收集的你更多理由",
+              icon: <Compass className={theme === 'voxel' ? 'text-teal-500' : 'text-indigo-500'} />,
               bg: theme === 'aura' ? 'bg-white/70 dark:bg-slate-950/70' : 'bg-white dark:bg-slate-950'
             },
             { 
-              title: "安全稳定", 
-              desc: "多重数据备份与专业的管理团队，守护每一份建筑成果。",
-              icon: <ShieldCheck className={theme === 'voxel' ? 'text-amber-500' : 'text-emerald-500'} />,
+              title: "社区社交", 
+              desc: "婚姻、公会、表情动作，在服务器里找到能玩到一块的伙伴",
+              icon: <Globe className={theme === 'voxel' ? 'text-amber-500' : 'text-emerald-500'} />,
               bg: theme === 'aura' ? 'bg-white/70 dark:bg-slate-950/70' : 'bg-white dark:bg-slate-950'
             }
           ].map((item, i) => (
             <div key={i} className={`p-8 md:p-12 ${item.bg} hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-all duration-500 group relative overflow-hidden`}>
-              <div className={`absolute inset-0 bg-gradient-to-br from-transparent opacity-0 group-hover:opacity-100 transition-opacity ${
+              <div className={`absolute inset-0 bg-linear-to-br from-transparent opacity-0 group-hover:opacity-100 transition-opacity ${
                 theme === 'blueprint' ? 'group-hover:from-slate-500/5' :
                 theme === 'aura' ? 'group-hover:from-blue-500/10' :
                 'group-hover:from-emerald-500/10'
@@ -202,7 +202,7 @@ const Home: React.FC = () => {
               { label: "主连接线路", ip: SERVER_IPS.primary, icon: <Zap size={24} className={theme === 'voxel' ? 'text-emerald-500' : 'text-amber-500'} />, badge: "推荐" },
               { label: "备用连接线路", ip: SERVER_IPS.secondary, icon: <Globe size={24} className={theme === 'voxel' ? 'text-teal-500' : 'text-blue-500'} />, badge: "稳定" }
             ].map((item, i) => (
-              <div key={i} className={`group p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border transition-all duration-500 relative overflow-hidden ${
+              <div key={i} className={`group p-6 md:p-10 rounded-4xl md:rounded-[2.5rem] border transition-all duration-500 relative overflow-hidden ${
                 theme === 'blueprint' ? 'bg-slate-100/50 border-slate-200 hover:border-slate-400 hover:bg-white dark:bg-slate-900/50 dark:border-slate-800' :
                 theme === 'aura' ? 'bg-white/40 backdrop-blur-md border-white/40 hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-500/10 dark:bg-slate-900/40 dark:border-slate-800/40' :
                 'bg-stone-100/80 border-stone-200 hover:border-emerald-300 hover:bg-white dark:bg-slate-900/80 dark:border-slate-800'
@@ -234,7 +234,7 @@ const Home: React.FC = () => {
                   </div>
                   <button 
                     onClick={() => copyToClipboard(item.ip)}
-                    className={`px-6 md:px-8 py-3 md:py-4 flex items-center justify-center gap-2 font-black rounded-2xl transition-all relative overflow-hidden active:scale-95 flex-shrink-0 ${
+                    className={`px-6 md:px-8 py-3 md:py-4 flex items-center justify-center gap-2 font-black rounded-2xl transition-all relative overflow-hidden active:scale-95 shrink-0 ${
                       copied === item.ip 
                         ? 'bg-emerald-500 text-white' 
                         : theme === 'blueprint' ? 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 shadow-lg' :
@@ -275,12 +275,12 @@ const Home: React.FC = () => {
           <div className="lg:col-span-3 space-y-4">
             <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">快速链接</h4>
             <ul className="space-y-2">
-              <li><Link to="/wiki/intro" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
+              <li><Link to="/wiki/index" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
                 theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
                 theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
                 'text-slate-900 dark:text-white hover:text-emerald-600'
-              }`}>入门指南</Link></li>
-              <li><Link to="/wiki/rules" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
+              }`}>Wiki 首页</Link></li>
+              <li><Link to="/wiki/intro" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
                 theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
                 theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
                 'text-slate-900 dark:text-white hover:text-emerald-600'

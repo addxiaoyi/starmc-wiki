@@ -12,6 +12,12 @@ export const SERVER_IPS = {
 
 export const NAVIGATION: NavItem[] = [
   {
+    title: "Wiki 首页",
+    items: [
+      { title: "欢迎", path: "/wiki/index" },
+    ]
+  },
+  {
     title: "新手入门",
     items: [
       { 
@@ -24,6 +30,50 @@ export const NAVIGATION: NavItem[] = [
       },
       { title: "公告与服务器指南", path: "/wiki/announcement" },
       { title: "服务器矩阵", path: "/wiki/server-matrix" },
+    ]
+  },
+  {
+    title: "基础支撑",
+    icon: "🛠️",
+    items: [
+      { title: "自定义资源加载", path: "/wiki/core/ResourceLoading" },
+      { title: "跨平台连接指南", path: "/wiki/core/CrossPlatform" },
+      { title: "世界高度与边界", path: "/wiki/core/WorldLimits" },
+    ]
+  },
+  {
+    title: "农场与探险",
+    icon: "⛰️",
+    items: [
+      { title: "农作物种植指南", path: "/wiki/gameplay/Farming" },
+      { title: "趣味垂钓系统", path: "/wiki/gameplay/Fishing" },
+      { title: "个人能力与属性", path: "/wiki/gameplay/Skills" },
+      { title: "城市交通网络", path: "/wiki/gameplay/Transportation" },
+      { title: "公会与团队建设", path: "/wiki/gameplay/Guilds" },
+      { title: "世界高度与边界", path: "/wiki/gameplay/WorldLimits" },
+    ]
+  },
+  {
+    title: "社交与个性化",
+    icon: "🎭",
+    items: [
+      { title: "个性化标识系统", path: "/wiki/social/Identity" },
+      { title: "伴侣与婚姻系统", path: "/wiki/social/Marriage" },
+      { title: "互动表情与图片", path: "/wiki/social/Expression" },
+      { title: "动作与肢体交互", path: "/wiki/social/Interaction" },
+      { title: "聊天增强功能", path: "/wiki/social/ChatEnhance" },
+    ]
+  },
+  {
+    title: "经济与便利设施",
+    icon: "💰",
+    items: [
+      { title: "自助贸易商店", path: "/wiki/utility/Trading" },
+      { title: "每日挑战任务", path: "/wiki/utility/Quests" },
+      { title: "福利抽奖系统", path: "/wiki/utility/Luck" },
+      { title: "日常签到福利", path: "/wiki/utility/CheckIn" },
+      { title: "地标传送系统", path: "/wiki/utility/Warp" },
+      { title: "服务反馈中心", path: "/wiki/utility/Support" },
     ]
   },
   {
@@ -64,6 +114,15 @@ export const NAVIGATION: NavItem[] = [
 
 export const MOCK_PAGES: WikiPage[] = [
   {
+    id: "index",
+    slug: "index",
+    title: "星露百科 Wiki",
+    category: "首页",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🏠"
+  },
+  {
     id: "contributing",
     slug: "contributing",
     title: "贡献指南与 MD 规范",
@@ -77,10 +136,189 @@ export const MOCK_PAGES: WikiPage[] = [
     slug: "template",
     title: "Wiki 页面基础模板",
     category: "开发者与贡献者",
-    parent: "contributing",
     lastUpdated: "2026-02-10",
     content: "",
     icon: "📄"
+  },
+  {
+    id: "core-resourceloading",
+    slug: "core/ResourceLoading",
+    title: "自定义资源加载",
+    category: "基础支撑",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "📦"
+  },
+  {
+    id: "core-crossplatform",
+    slug: "core/CrossPlatform",
+    title: "跨平台连接指南",
+    category: "基础支撑",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🌐"
+  },
+  {
+    id: "core-worldlimits",
+    slug: "core/WorldLimits",
+    title: "世界高度与边界",
+    category: "基础支撑",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "📏"
+  },
+  {
+    id: "gameplay-farming",
+    slug: "gameplay/Farming",
+    title: "农作物种植指南",
+    category: "农场与探险",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🌾"
+  },
+  {
+    id: "gameplay-fishing",
+    slug: "gameplay/Fishing",
+    title: "趣味垂钓系统",
+    category: "农场与探险",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🎣"
+  },
+  {
+    id: "gameplay-skills",
+    slug: "gameplay/Skills",
+    title: "个人能力与属性",
+    category: "农场与探险",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🗡️"
+  },
+  {
+    id: "gameplay-transportation",
+    slug: "gameplay/Transportation",
+    title: "城市交通网络",
+    category: "农场与探险",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🚇"
+  },
+  {
+    id: "gameplay-guilds",
+    slug: "gameplay/Guilds",
+    title: "公会与团队建设",
+    category: "农场与探险",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🛡️"
+  },
+  {
+    id: "gameplay-worldlimits",
+    slug: "gameplay/WorldLimits",
+    title: "世界高度与边界",
+    category: "农场与探险",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🏰"
+  },
+  {
+    id: "social-identity",
+    slug: "social/Identity",
+    title: "个性化标识系统",
+    category: "社交与个性化",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🆔"
+  },
+  {
+    id: "social-marriage",
+    slug: "social/Marriage",
+    title: "伴侣与婚姻系统",
+    category: "社交与个性化",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "💍"
+  },
+  {
+    id: "social-expression",
+    slug: "social/Expression",
+    title: "互动表情与图片",
+    category: "社交与个性化",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🖼️"
+  },
+  {
+    id: "social-interaction",
+    slug: "social/Interaction",
+    title: "动作与肢体交互",
+    category: "社交与个性化",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "💃"
+  },
+  {
+    id: "social-chatenhance",
+    slug: "social/ChatEnhance",
+    title: "聊天增强功能",
+    category: "社交与个性化",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "💬"
+  },
+  {
+    id: "utility-trading",
+    slug: "utility/Trading",
+    title: "自助贸易商店",
+    category: "经济与便利设施",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "💰"
+  },
+  {
+    id: "utility-quests",
+    slug: "utility/Quests",
+    title: "每日挑战任务",
+    category: "经济与便利设施",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "📜"
+  },
+  {
+    id: "utility-luck",
+    slug: "utility/Luck",
+    title: "福利抽奖系统",
+    category: "经济与便利设施",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🎲"
+  },
+  {
+    id: "utility-checkin",
+    slug: "utility/CheckIn",
+    title: "日常签到福利",
+    category: "经济与便利设施",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "📅"
+  },
+  {
+    id: "utility-warp",
+    slug: "utility/Warp",
+    title: "地标传送系统",
+    category: "经济与便利设施",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "📍"
+  },
+  {
+    id: "utility-support",
+    slug: "utility/Support",
+    title: "服务反馈中心",
+    category: "经济与便利设施",
+    lastUpdated: "2026-03-09",
+    content: "",
+    icon: "🆘"
   },
   {
     id: "announcement",
