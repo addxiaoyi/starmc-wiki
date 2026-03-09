@@ -147,7 +147,7 @@ export const MOCK_PAGES: WikiPage[] = [
     category: "基础支撑",
     lastUpdated: "2026-03-09",
     content: "",
-    icon: "📦"
+    icon: "🛠️"
   },
   {
     id: "core-crossplatform",
@@ -213,7 +213,7 @@ export const MOCK_PAGES: WikiPage[] = [
     icon: "🛡️"
   },
   {
-    id: "gameplay-worldlimits",
+    id: "gameplay-worldlimits-2",
     slug: "gameplay/WorldLimits",
     title: "世界高度与边界",
     category: "农场与探险",
@@ -255,7 +255,7 @@ export const MOCK_PAGES: WikiPage[] = [
     category: "社交与个性化",
     lastUpdated: "2026-03-09",
     content: "",
-    icon: "💃"
+    icon: "🏃"
   },
   {
     id: "social-chatenhance",
@@ -318,7 +318,7 @@ export const MOCK_PAGES: WikiPage[] = [
     category: "经济与便利设施",
     lastUpdated: "2026-03-09",
     content: "",
-    icon: "🆘"
+    icon: "☎️"
   },
   {
     id: "announcement",

@@ -151,13 +151,30 @@ const WikiPage: React.FC = () => {
       setError(false);
       try {
         const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+        // 尝试加载 Markdown 文件
+        // 由于 slug 可能包含子目录 (如 core/ResourceLoading)，fetch 会自动处理路径
         const response = await fetch(`${baseUrl}/content/wiki/${slug}.md?v=${Date.now()}`);
-        if (!response.ok) throw new Error(`Failed to load markdown: ${response.status}`);
-        const text = await response.text();
         
-        const { cleanContent, metadata } = parseMetadata(text);
-        setContent(cleanContent);
-        setMeta(metadata);
+        if (!response.ok) {
+          // 如果子目录路径加载失败，尝试从根目录加载 (兼容旧路径)
+          const fileName = slug.split('/').pop();
+          const fallbackResponse = await fetch(`${baseUrl}/content/wiki/${fileName}.md?v=${Date.now()}`);
+          
+          if (!fallbackResponse.ok) {
+            throw new Error(`Failed to load markdown: ${response.status}`);
+          }
+          
+          const text = await fallbackResponse.text();
+          const { cleanContent, metadata } = parseMetadata(text);
+          setContent(cleanContent);
+          setMeta(metadata);
+        } else {
+          const text = await response.text();
+          const { cleanContent, metadata } = parseMetadata(text);
+          setContent(cleanContent);
+          setMeta(metadata);
+        }
+        
         // 重置活跃目录项
         setActiveId('');
       } catch (err) {
