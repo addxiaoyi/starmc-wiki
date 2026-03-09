@@ -306,7 +306,7 @@ const WikiPage: React.FC = () => {
       onDrop={onDrop}
     >
       {/* 阅读进度条 */}
-      <div className="fixed top-0 left-0 w-full h-1 z-[100] pointer-events-none">
+      <div className="fixed top-0 left-0 w-full h-1 z-100 pointer-events-none">
         <div 
           className="h-full bg-indigo-500 transition-all duration-300 ease-out"
           style={{ width: `${readingProgress}%` }}
