@@ -62,27 +62,20 @@ const WikiPage: React.FC = () => {
   };
 
   const [activeId, setActiveId] = useState<string>('');
+  const [showMobileToc, setShowMobileToc] = useState(false);
+  const [readingProgress, setReadingProgress] = useState(0);
 
-  // 监听滚动更新活跃目录项
+  // 监听滚动更新活跃目录项和阅读进度
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: '-10% 0% -80% 0%' }
-    );
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / totalHeight) * 100;
+      setReadingProgress(progress);
+    };
 
-    toc.forEach((item) => {
-      const element = document.getElementById(item.id);
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [toc]);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // 解析 MD 中的元数据
   const parseMetadata = (text: string) => {
@@ -112,7 +105,44 @@ const WikiPage: React.FC = () => {
     };
   };
 
-  const [showMobileToc, setShowMobileToc] = useState(false);
+  // 生成文章目录 (TOC)
+  const toc = useMemo(() => {
+    const headings = content.split('\n')
+      .filter(line => line.startsWith('## ') || line.startsWith('### '))
+      .map(line => {
+        const level = line.startsWith('## ') ? 2 : 3;
+        const text = line.replace(/^#+ /, '').trim();
+        const id = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+        return { level, text, id };
+      });
+    return headings;
+  }, [content]);
+
+  // 监听滚动更新活跃目录项
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleHeadings = entries.filter(entry => entry.isIntersecting);
+        if (visibleHeadings.length > 0) {
+          // 获取最顶部的可见标题
+          const topHeading = visibleHeadings.sort((a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top)[0];
+          setActiveId(topHeading.target.id);
+        }
+      },
+      { 
+        rootMargin: '-80px 0% -80% 0%',
+        threshold: 0
+      }
+    );
+
+    toc.forEach((item) => {
+      const element = document.getElementById(item.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  // 依赖数组中需声明已使用的块范围变量 toc，否则 lint 会报错
+  }, [toc]);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -120,7 +150,6 @@ const WikiPage: React.FC = () => {
       setLoading(true);
       setError(false);
       try {
-        // 优先尝试从 API 路径获取
         const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
         const response = await fetch(`${baseUrl}/content/wiki/${slug}.md?v=${Date.now()}`);
         if (!response.ok) throw new Error(`Failed to load markdown: ${response.status}`);
@@ -129,6 +158,8 @@ const WikiPage: React.FC = () => {
         const { cleanContent, metadata } = parseMetadata(text);
         setContent(cleanContent);
         setMeta(metadata);
+        // 重置活跃目录项
+        setActiveId('');
       } catch (err) {
         console.error('Error fetching markdown:', err);
         if (basePageInfo?.content) {
@@ -158,24 +189,12 @@ const WikiPage: React.FC = () => {
     return MOCK_PAGES.filter(p => p.parent === slug);
   }, [slug]);
 
-  // 生成文章目录 (TOC)
-  const toc = useMemo(() => {
-    const headings = content.split('\n')
-      .filter(line => line.startsWith('## ') || line.startsWith('### '))
-      .map(line => {
-        const level = line.startsWith('## ') ? 2 : 3;
-        const text = line.replace(/^#+ /, '').trim();
-        const id = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
-        return { level, text, id };
-      });
-    return headings;
-  }, [content]);
-
   // 管理员权限检查
   const isAdmin = useMemo(() => {
     return new URLSearchParams(location.search).get('admin') === 'true' || 
            localStorage.getItem('starmc_admin') === 'true' ||
-           window.location.hostname === 'localhost';
+           window.location.hostname === 'localhost' ||
+           window.location.hostname === '127.0.0.1';
   }, [location.search]);
 
   const handleShare = async () => {
@@ -203,25 +222,34 @@ const WikiPage: React.FC = () => {
   // 计算上下页导航
   const navigationLinks = useMemo(() => {
     const allItems: { title: string; path: string }[] = [];
-    NAVIGATION.forEach(section => {
-      section.items.forEach(item => {
-        if (item.path.startsWith('/wiki/')) {
+    
+    // 递归获取所有导航项
+    const extractItems = (items: any[]) => {
+      items.forEach(item => {
+        if (item.path && item.path.startsWith('/wiki/')) {
           allItems.push({ title: item.title, path: item.path });
         }
         if (item.items) {
-          item.items.forEach(subItem => {
-            if (subItem.path.startsWith('/wiki/')) {
-              allItems.push({ title: subItem.title, path: subItem.path });
-            }
-          });
+          extractItems(item.items);
         }
       });
+    };
+
+    NAVIGATION.forEach(section => {
+      if (section.items) {
+        extractItems(section.items);
+      }
     });
 
-    const currentIndex = allItems.findIndex(item => item.path === `/wiki/${slug}`);
+    // 去重并查找当前索引
+    const uniqueItems = allItems.filter((item, index, self) =>
+      index === self.findIndex((t) => t.path === item.path)
+    );
+
+    const currentIndex = uniqueItems.findIndex(item => item.path === `/wiki/${slug}`);
     return {
-      prev: currentIndex > 0 ? allItems[currentIndex - 1] : null,
-      next: currentIndex < allItems.length - 1 ? allItems[currentIndex + 1] : null
+      prev: currentIndex > 0 ? uniqueItems[currentIndex - 1] : null,
+      next: currentIndex < uniqueItems.length - 1 ? uniqueItems[currentIndex + 1] : null
     };
   }, [slug]);
 
@@ -255,11 +283,19 @@ const WikiPage: React.FC = () => {
 
   return (
     <div 
-      className="max-w-6xl mx-auto px-4 sm:px-6 py-6 lg:py-16 animate-in fade-in slide-in-from-right-4 duration-500 relative"
+      className="max-w-7xl mx-auto px-4 sm:px-6 py-6 lg:py-16 animate-in fade-in slide-in-from-right-4 duration-500 relative"
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
+      {/* 阅读进度条 */}
+      <div className="fixed top-0 left-0 w-full h-1 z-[100] pointer-events-none">
+        <div 
+          className="h-full bg-indigo-500 transition-all duration-300 ease-out"
+          style={{ width: `${readingProgress}%` }}
+        />
+      </div>
+
       {/* 拖拽上传覆盖层 */}
       {isDragging && (
         <div className="fixed inset-0 z-200 flex items-center justify-center bg-blue-600/20 backdrop-blur-sm border-4 border-dashed border-blue-500 m-4 rounded-[2.5rem] pointer-events-none animate-in fade-in duration-200">
@@ -273,19 +309,32 @@ const WikiPage: React.FC = () => {
         </div>
       )}
       
-      {/* 手机端目录悬浮按钮 */}
-      {toc.length > 0 && (
-        <button 
-          onClick={() => setShowMobileToc(!showMobileToc)}
-          className="fixed bottom-6 right-6 z-50 lg:hidden w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-all active:scale-95"
-        >
-          <List size={24} />
-        </button>
-      )}
+      {/* 悬浮操作栏 */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        {/* 返回顶部 */}
+        {readingProgress > 20 && (
+          <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="w-12 h-12 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 animate-in fade-in zoom-in duration-300"
+          >
+            <ChevronRight size={24} className="-rotate-90" />
+          </button>
+        )}
+        
+        {/* 手机端目录悬浮按钮 */}
+        {toc.length > 0 && (
+          <button 
+            onClick={() => setShowMobileToc(!showMobileToc)}
+            className="lg:hidden w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-all active:scale-95"
+          >
+            <List size={24} />
+          </button>
+        )}
+      </div>
 
       {/* 手机端目录抽屉 */}
       {showMobileToc && (
-        <div className="fixed inset-0 z-[60] lg:hidden">
+        <div className="fixed inset-0 z-60 lg:hidden">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowMobileToc(false)} />
           <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[2.5rem] p-8 max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
             <div className="flex items-center justify-between mb-6">
@@ -326,241 +375,233 @@ const WikiPage: React.FC = () => {
         </div>
       )}
       
-      <div className="flex flex-col lg:flex-row gap-12">
-        {/* Main Content */}
-        <div className="flex-1 min-w-0 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-          {/* Breadcrumbs */}
-          <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-6 lg:mb-8 dark:text-slate-500 overflow-x-auto whitespace-nowrap scrollbar-none">
-            <Link to="/" className="hover:text-blue-500 transition-colors shrink-0">首页</Link>
-            <ChevronRight size={12} />
-            <span className="text-slate-600 dark:text-slate-300 shrink-0">{displayInfo?.category || 'Wiki'}</span>
-            <ChevronRight size={12} />
-            <span className="text-blue-500 truncate">{displayInfo?.title || slug}</span>
-          </nav>
+      <div className="flex flex-col lg:flex-row gap-12 items-start">
+        {/* Main Content Area */}
+        <div className="flex-1 min-w-0 w-full">
+          <div className="max-w-4xl">
+            {/* Breadcrumbs */}
+            <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-6 lg:mb-8 dark:text-slate-500 overflow-x-auto whitespace-nowrap scrollbar-none">
+              <Link to="/" className="hover:text-blue-500 transition-colors shrink-0">首页</Link>
+              <ChevronRight size={12} />
+              <span className="text-slate-600 dark:text-slate-300 shrink-0">{displayInfo?.category || 'Wiki'}</span>
+              <ChevronRight size={12} />
+              <span className="text-blue-500 truncate">{displayInfo?.title || slug}</span>
+            </nav>
 
-          {/* Hero Header */}
-          <header className="mb-8 lg:mb-12">
-            <div className="flex flex-wrap items-center gap-3 lg:gap-4 text-[10px] lg:text-xs font-mono text-slate-400 mb-4 dark:text-slate-500">
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 rounded-md dark:bg-slate-900 dark:text-slate-400">
-                <Calendar size={12} />
-                <span className="whitespace-nowrap">{displayInfo?.lastUpdated || '2026-02-10'}</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400 rounded-md">
-                <Tag size={12} />
-                <span className="whitespace-nowrap">{displayInfo?.category || '文档'}</span>
-              </div>
-              {displayInfo?.icon && (
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-indigo-50 text-indigo-600 rounded-md dark:bg-indigo-950 dark:text-indigo-400">
-                  <span className="text-base lg:text-lg">{displayInfo.icon}</span>
+            {/* Hero Header */}
+            <header className="mb-8 lg:mb-12">
+              <div className="flex flex-wrap items-center gap-3 lg:gap-4 text-[10px] lg:text-xs font-mono text-slate-400 mb-4 dark:text-slate-500">
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 rounded-md dark:bg-slate-900 dark:text-slate-400">
+                  <Calendar size={12} />
+                  <span className="whitespace-nowrap">{displayInfo?.lastUpdated || '2026-02-10'}</span>
                 </div>
-              )}
-            </div>
-            <h1 className="text-3xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight dark:text-white wrap-break-word mb-4">
-              {displayInfo?.title || slug}
-            </h1>
-          </header>
-
-          {/* Main Content Area */}
-          <div className="relative">
-            <MarkdownRenderer content={content} />
-          </div>
-
-          {/* 子页面导航 (如果存在) */}
-          {subPages.length > 0 && (
-            <div className="mt-16 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
-              <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2 dark:text-white">
-                <Layers size={20} className="text-indigo-500" />
-                相关子页面
-              </h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {subPages.map(page => (
-                  <Link 
-                    key={page.slug}
-                    to={`/wiki/${page.slug}`}
-                    className="group p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-500 hover:shadow-md transition-all dark:bg-slate-950 dark:border-slate-800 dark:hover:border-indigo-500"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors dark:text-slate-300 dark:group-hover:text-indigo-400">{page.title}</span>
-                      <ChevronRight size={16} className="text-slate-300 group-hover:text-indigo-500 transition-all dark:text-slate-700" />
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Page Footer / Controls */}
-          <footer className="mt-16 lg:mt-20 pt-8 border-t border-slate-100 dark:border-slate-800">
-            {/* 上下页导航 */}
-            {(navigationLinks.prev || navigationLinks.next) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-                {navigationLinks.prev ? (
-                  <Link 
-                    to={navigationLinks.prev.path}
-                    className="flex flex-col gap-2 p-6 bg-slate-50 border border-slate-100 rounded-3xl hover:border-blue-500 hover:shadow-md transition-all dark:bg-slate-900/50 dark:border-slate-800"
-                  >
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">上一篇</span>
-                    <span className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <ArrowLeft size={20} />
-                      {navigationLinks.prev.title}
-                    </span>
-                  </Link>
-                ) : <div />}
-                
-                {navigationLinks.next && (
-                  <Link 
-                    to={navigationLinks.next.path}
-                    className="flex flex-col gap-2 p-6 bg-slate-50 border border-slate-100 rounded-3xl hover:border-blue-500 hover:shadow-md transition-all items-end text-right dark:bg-slate-900/50 dark:border-slate-800"
-                  >
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">下一篇</span>
-                    <span className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      {navigationLinks.next.title}
-                      <ChevronRight size={20} />
-                    </span>
-                  </Link>
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400 rounded-md">
+                  <Tag size={12} />
+                  <span className="whitespace-nowrap">{displayInfo?.category || '文档'}</span>
+                </div>
+                {displayInfo?.icon && (
+                  <div className="flex items-center gap-1.5 px-2 py-1 bg-indigo-50 text-indigo-600 rounded-md dark:bg-indigo-950 dark:text-indigo-400">
+                    <span className="text-base lg:text-lg">{displayInfo.icon}</span>
+                  </div>
                 )}
+              </div>
+              <h1 className="text-3xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight dark:text-white wrap-break-word mb-4">
+                {displayInfo?.title || slug}
+              </h1>
+            </header>
+
+            {/* Content Rendering */}
+            <div className="relative">
+              <MarkdownRenderer content={content} />
+            </div>
+
+            {/* Related Pages */}
+            {subPages.length > 0 && (
+              <div className="mt-16 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
+                <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2 dark:text-white">
+                  <Layers size={20} className="text-indigo-500" />
+                  相关子页面
+                </h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {subPages.map(page => (
+                    <Link 
+                      key={page.slug}
+                      to={`/wiki/${page.slug}`}
+                      className="group p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-500 hover:shadow-md transition-all dark:bg-slate-950 dark:border-slate-800 dark:hover:border-indigo-500"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors dark:text-slate-300 dark:group-hover:text-indigo-400">{page.title}</span>
+                        <ChevronRight size={16} className="text-slate-300 group-hover:text-indigo-500 transition-all dark:text-slate-700" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-              <div className="flex flex-wrap items-center gap-2 lg:gap-3">
-                <Link 
-                  to="/" 
-                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all dark:text-slate-400 dark:bg-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
-                >
-                  <ArrowLeft size={16} />
-                  返回首页
-                </Link>
-                {slug === 'template' && isAdmin && (
-                  <button 
-                    onClick={() => {
-                      // 使用 fetch 获取原始文件内容，这样下载的文件会包含最新的注释元数据
-                      const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-                      const filePath = `${baseUrl}/content/wiki/template.md`;
-                      
-                      fetch(filePath)
-                        .then(res => res.text())
-                        .then(text => {
-                          const blob = new Blob([text], { type: 'text/markdown' });
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = 'template.md';
-                          a.click();
-                          URL.revokeObjectURL(url);
-                        })
-                        .catch(err => {
-                          console.error('Download failed:', err);
-                          // 降级方案：手动生成
-                          const fallbackContent = `<!--\nTITLE: 页面标题\nCATEGORY: 侧边栏分类\nLAST_UPDATED: ${new Date().toISOString().split('T')[0]}\nPARENT: \nICON: 📄\n-->\n\n# 新页面标题\n\n在此编写内容...`;
-                          const blob = new Blob([fallbackContent], { type: 'text/markdown' });
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = 'template.md';
-                          a.click();
-                          URL.revokeObjectURL(url);
-                        });
-                    }}
-                    className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all dark:bg-indigo-950 dark:text-indigo-400 dark:hover:bg-indigo-900"
-                  >
-                    <Download size={16} />
-                    下载模板
-                  </button>
-                )}
-                
-                {isAdmin && (
-                  <a 
-                    href="https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-900"
-                  >
-                    <Upload size={16} />
-                    上传文档
-                  </a>
-                )}
-              </div>
-              
-              <div className="flex items-center justify-between sm:justify-end gap-2">
-                <div className="flex items-center gap-1">
-                  <button 
-                    className="p-2 text-slate-400 hover:text-slate-900 transition-colors relative dark:hover:text-white" 
-                    title="分享"
-                    onClick={handleShare}
-                  >
-                    <Share2 size={18} />
-                    {copied && (
-                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-700 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap dark:bg-slate-600">
-                        已复制!
+            {/* Footer Navigation */}
+            <footer className="mt-16 lg:mt-20 pt-8 border-t border-slate-100 dark:border-slate-800">
+              {(navigationLinks.prev || navigationLinks.next) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+                  {navigationLinks.prev ? (
+                    <Link 
+                      to={navigationLinks.prev.path}
+                      className="flex flex-col gap-2 p-6 bg-slate-50 border border-slate-100 rounded-3xl hover:border-blue-500 hover:shadow-md transition-all dark:bg-slate-900/50 dark:border-slate-800"
+                    >
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">上一篇</span>
+                      <span className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                        <ArrowLeft size={20} />
+                        {navigationLinks.prev.title}
                       </span>
-                    )}
-                  </button>
+                    </Link>
+                  ) : <div />}
                   
-                  {isAdmin && (
-                    <>
-                      <Link 
-                        to="/history"
-                        className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
-                        title="全站变更历史"
-                      >
-                        <History size={18} />
-                      </Link>
-                      <a 
-                        href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/commits/branch/main/public/content/wiki/${slug}.md`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
-                        title="源码历史"
-                      >
-                        <ExternalLinkIcon size={18} />
-                      </a>
-                    </>
+                  {navigationLinks.next && (
+                    <Link 
+                      to={navigationLinks.next.path}
+                      className="flex flex-col gap-2 p-6 bg-slate-50 border border-slate-100 rounded-3xl hover:border-blue-500 hover:shadow-md transition-all items-end text-right dark:bg-slate-900/50 dark:border-slate-800"
+                    >
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">下一篇</span>
+                      <span className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                        {navigationLinks.next.title}
+                        <ChevronRight size={20} />
+                      </span>
+                    </Link>
                   )}
                 </div>
+              )}
 
-                {isAdmin && (
-                  <a 
-                    href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki/${slug}.md`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all dark:bg-blue-950 dark:text-blue-400 dark:hover:bg-blue-900"
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="flex flex-wrap items-center gap-2 lg:gap-3">
+                  <Link 
+                    to="/" 
+                    className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all dark:text-slate-400 dark:bg-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
                   >
-                    <Edit3 size={16} />
-                    编辑 (MD)
-                  </a>
-                )}
+                    <ArrowLeft size={16} />
+                    返回首页
+                  </Link>
+                  {slug === 'template' && isAdmin && (
+                    <button 
+                      onClick={() => {
+                        const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+                        const filePath = `${baseUrl}/content/wiki/template.md`;
+                        fetch(filePath)
+                          .then(res => res.text())
+                          .then(text => {
+                            const blob = new Blob([text], { type: 'text/markdown' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'template.md';
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          })
+                          .catch(err => {
+                            console.error('Download failed:', err);
+                            const fallbackContent = `<!--\nTITLE: 页面标题\nCATEGORY: 侧边栏分类\nLAST_UPDATED: ${new Date().toISOString().split('T')[0]}\nPARENT: \nICON: 📄\n-->\n\n# 新页面标题\n\n在此编写内容...`;
+                            const blob = new Blob([fallbackContent], { type: 'text/markdown' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'template.md';
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          });
+                      }}
+                      className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all dark:bg-indigo-950 dark:text-indigo-400 dark:hover:bg-indigo-900"
+                    >
+                      <Download size={16} />
+                      下载模板
+                    </button>
+                  )}
+                  {isAdmin && (
+                    <a 
+                      href="https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-900"
+                    >
+                      <Upload size={16} />
+                      上传文档
+                    </a>
+                  )}
+                </div>
+                
+                <div className="flex items-center justify-between sm:justify-end gap-2">
+                  <div className="flex items-center gap-1">
+                    <button 
+                      className="p-2 text-slate-400 hover:text-slate-900 transition-colors relative dark:hover:text-white" 
+                      title="分享"
+                      onClick={handleShare}
+                    >
+                      <Share2 size={18} />
+                      {copied && (
+                        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-700 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap dark:bg-slate-600">
+                          已复制!
+                        </span>
+                      )}
+                    </button>
+                    {isAdmin && (
+                      <>
+                        <Link 
+                          to="/history"
+                          className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
+                          title="全站变更历史"
+                        >
+                          <History size={18} />
+                        </Link>
+                        <a 
+                          href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/commits/branch/main/public/content/wiki/${slug}.md`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="p-2 text-slate-400 hover:text-slate-900 transition-colors dark:hover:text-white"
+                          title="源码历史"
+                        >
+                          <ExternalLinkIcon size={18} />
+                        </a>
+                      </>
+                    )}
+                  </div>
+                  {isAdmin && (
+                    <a 
+                      href={`https://codeberg.org/addxiaoyi/starmc-wiki-page/src/branch/main/public/content/wiki/${slug}.md`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 md:px-4 py-2 text-xs md:text-sm font-black text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all dark:bg-blue-950 dark:text-blue-400 dark:hover:bg-blue-900"
+                    >
+                      <Edit3 size={16} />
+                      编辑 (MD)
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          </footer>
+            </footer>
+          </div>
         </div>
 
-        {/* Table of Contents - Sticky Sidebar */}
+        {/* Sidebar TOC - Desktop */}
         {toc.length > 0 && (
-          <aside className="hidden lg:block w-64 shrink-0">
-            <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-4">
-              <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest mb-6 dark:text-slate-600">
-                <List size={14} />
-                目录 / Contents
+          <aside className="hidden lg:block w-64 sticky top-24 shrink-0">
+            <div className="pl-6 border-l border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-sm mb-6">
+                <List size={18} className="text-indigo-500" />
+                本页目录 / TOC
               </div>
-              <ul className="space-y-3">
+              <ul className="space-y-1">
                 {toc.map((item, i) => (
-                  <li 
-                    key={i} 
-                    className={`${item.level === 3 ? 'ml-4' : ''}`}
-                  >
+                  <li key={i} className={item.level === 3 ? 'ml-4' : ''}>
                     <a 
                       href={`#${item.id}`}
-                      className={`block text-sm font-medium transition-all leading-relaxed py-1 px-2 rounded-lg ${
+                      className={`block py-1.5 text-sm font-bold transition-all border-l-2 -ml-[2px] pl-4 ${
                         activeId === item.id 
-                          ? 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-950/50' 
-                          : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+                          ? 'text-indigo-600 border-indigo-500 dark:text-indigo-400' 
+                          : 'text-slate-400 border-transparent hover:text-slate-600 hover:border-slate-200 dark:text-slate-500 dark:hover:text-slate-400'
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
                         const target = document.getElementById(item.id);
                         if (target) {
-                          const top = target.getBoundingClientRect().top + window.pageYOffset - 100;
+                          const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
                           window.scrollTo({ top, behavior: 'smooth' });
                         }
                       }}
@@ -570,6 +611,18 @@ const WikiPage: React.FC = () => {
                   </li>
                 ))}
               </ul>
+              
+              <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3 text-slate-400 dark:text-slate-600">
+                    <History size={16} />
+                    <span className="text-[10px] font-mono uppercase tracking-widest">页面历史</span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                    文档更新于 {displayInfo?.lastUpdated}。如发现错误，欢迎点击上方编辑按钮提交修改。
+                  </p>
+                </div>
+              </div>
             </div>
           </aside>
         )}
