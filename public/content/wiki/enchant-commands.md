@@ -1,0 +1,70 @@
+<!--
+TITLE: 附魔指令与查找
+CATEGORY: 核心系统
+LAST_UPDATED: 2026-04-30
+PARENT: enchantments_guide
+ICON: ⌨️
+-->
+
+# 附魔指令与查找
+
+这页整理和附魔相关的玩家可用指令。
+
+<div class="page-hero-card">
+
+**快速看点**
+
+- 快速查附魔、查详情、查名字
+- 适合临时确认某本附魔是什么
+- 不用翻完整页面也能找到目标
+
+</div>
+
+### 快速目录
+- [`/enchadd list`](#enchadd-list)
+- [`/enchadd info <key>`](#enchadd-info-key)
+- [`/enchadd find <名称>`](#enchadd-find-名称)
+- [别名 `/enchants`](#别名-enchants)
+
+---
+
+## `/enchadd list`
+
+列出当前可查看的附魔列表。
+
+- 适合先大致看看有哪些附魔
+- 可以用来确认自己想找的那本在不在
+
+## `/enchadd info <key>`
+
+查看某个附魔的详细信息。
+
+- 输入附魔 key，比如 `enchadd:telepathy`
+- 可以快速看到附魔说明
+- 适合已经知道名字、想查细节的时候
+
+## `/enchadd find <名称>`
+
+按附魔名字搜索。
+
+- 不记得 key 的时候很好用
+- 输入中文名或接近的名字即可
+- 适合玩家临时查找
+
+## 别名 `/enchants`
+
+`/enchants` 是同类查找入口的别名。
+
+- 适合记不住完整指令的人
+- 输入习惯更短
+- 常用于快速查看附魔相关内容
+
+---
+
+## 小提示
+
+这些指令在默认情况下就是玩家能用的，不需要管理员权限。
+
+---
+
+*最后更新于: 2026-04-30*

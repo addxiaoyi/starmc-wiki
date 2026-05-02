@@ -25,25 +25,20 @@ const PageLoader = () => (
 );
 
 const App: React.FC = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
-
   return (
     <Router>
-      {!isLoaded && <EntranceAnimation onComplete={() => setIsLoaded(true)} />}
-      <div className={`transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0 scale-95'}`}>
-        <ScrollToTop />
-        <Layout>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/wiki/*" element={<WikiPage />} />
-              <Route path="/admin/review" element={<AdminReview />} />
-              <Route path="/admin" element={<Navigate to="/admin/review" replace />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-        </Layout>
-      </div>
+      <ScrollToTop />
+      <Layout>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/wiki/*" element={<WikiPage />} />
+            <Route path="/admin/review" element={<AdminReview />} />
+            <Route path="/admin" element={<Navigate to="/admin/review" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </Layout>
     </Router>
   );
 };

@@ -6,20 +6,16 @@ export const GITHUB_DOCS_PATH = "(docs)";
 
 export const SERVER_IPS = {
   primary: "mc.star-mc.top",
-  secondary: "play.star-mc.top",
+  secondary: "max.star-mc.top",
+  tertiary: "star-mc.top",
   mod: "mod.star-mc.top"
 };
 
 export const NAVIGATION: NavItem[] = [
   {
-    title: "Wiki 首页",
+    title: "总览与新手",
     items: [
       { title: "欢迎", path: "/wiki/index" },
-    ]
-  },
-  {
-    title: "新手指南",
-    items: [
       { 
         title: "入门必看", 
         path: "/wiki/intro",
@@ -34,38 +30,63 @@ export const NAVIGATION: NavItem[] = [
     ]
   },
   {
-    title: "核心系统",
-    icon: "🛠️",
+    title: "世界基础",
     items: [
       { 
         title: "基础支撑", 
-        path: "/wiki/core/ResourceLoading",
         items: [
           { title: "自定义资源加载", path: "/wiki/core/ResourceLoading" },
           { title: "跨平台连接指南", path: "/wiki/core/CrossPlatform" },
           { title: "世界高度与边界", path: "/wiki/core/WorldLimits" },
         ]
       },
-      {
-        title: "游戏机制",
-        path: "/wiki/commands",
-        items: [
-          { title: "基础指令", path: "/wiki/commands" },
-          { title: "领地系统", path: "/wiki/residence" },
-          { title: "经济与贸易", path: "/wiki/economy" },
-          { title: "附魔功能指南", path: "/wiki/enchantments_guide" },
-          { title: "红石限制说明", path: "/wiki/redstone" },
-        ]
-      }
+      { title: "基础指令", path: "/wiki/commands" },
+      { title: "领地系统", path: "/wiki/residence" },
+      { title: "经济与贸易", path: "/wiki/economy" },
+      { title: "红石限制说明", path: "/wiki/redstone" },
     ]
   },
   {
-    title: "生存与探险",
-    icon: "⛰️",
+    title: "附魔分类",
+    items: [
+      {
+        title: "总览与入门",
+        items: [
+          { title: "附魔功能指南", path: "/wiki/enchantments_guide" },
+          { title: "附魔新手入门", path: "/wiki/enchant-beginners" },
+          { title: "附魔 FAQ", path: "/wiki/enchant-faq" },
+        ]
+      },
+      {
+        title: "获取与来源",
+        items: [
+          { title: "附魔获取途径", path: "/wiki/enchant-sources" },
+          { title: "诅咒说明", path: "/wiki/enchant-curses" },
+        ]
+      },
+      {
+        title: "玩法与搭配",
+        items: [
+          { title: "附魔玩法分类", path: "/wiki/enchant-playstyles" },
+          { title: "附魔推荐搭配", path: "/wiki/enchant-combos" },
+          { title: "冲突取舍建议", path: "/wiki/enchant-tradeoffs" },
+        ]
+      },
+      {
+        title: "规则与工具",
+        items: [
+          { title: "附魔冲突说明", path: "/wiki/enchant-conflicts" },
+          { title: "附魔指令与查找", path: "/wiki/enchant-commands" },
+          { title: "PlaceholderAPI 变量", path: "/wiki/enchant-placeholderapi" },
+        ]
+      },
+    ]
+  },
+  {
+    title: "生存与玩法",
     items: [
       { 
         title: "农场生活", 
-        path: "/wiki/gameplay/Farming",
         items: [
           { title: "农作物种植指南", path: "/wiki/gameplay/Farming" },
           { title: "趣味垂钓系统", path: "/wiki/gameplay/Fishing" },
@@ -73,7 +94,6 @@ export const NAVIGATION: NavItem[] = [
       },
       {
         title: "成长与社交",
-        path: "/wiki/gameplay/Skills",
         items: [
           { title: "个人能力与属性", path: "/wiki/gameplay/Skills" },
           { title: "公会与团队建设", path: "/wiki/gameplay/Guilds" },
@@ -89,7 +109,6 @@ export const NAVIGATION: NavItem[] = [
     items: [
       { 
         title: "玩家形象", 
-        path: "/wiki/social/Identity",
         items: [
           { title: "个性化标识系统", path: "/wiki/social/Identity" },
           { title: "皮肤与披风", path: "/wiki/customization" },
@@ -97,7 +116,6 @@ export const NAVIGATION: NavItem[] = [
       },
       {
         title: "社交互动",
-        path: "/wiki/social/Interaction",
         items: [
           { title: "互动表情与图片", path: "/wiki/social/Expression" },
           { title: "动作与肢体交互", path: "/wiki/social/Interaction" },
@@ -112,7 +130,6 @@ export const NAVIGATION: NavItem[] = [
     items: [
       { 
         title: "商业贸易", 
-        path: "/wiki/utility/Trading",
         items: [
           { title: "自助贸易商店", path: "/wiki/utility/Trading" },
           { title: "地标传送系统", path: "/wiki/utility/Warp" },
@@ -120,7 +137,6 @@ export const NAVIGATION: NavItem[] = [
       },
       {
         title: "日常福利",
-        path: "/wiki/utility/Quests",
         items: [
           { title: "每日挑战任务", path: "/wiki/utility/Quests" },
           { title: "福利抽奖系统", path: "/wiki/utility/Luck" },
@@ -136,7 +152,6 @@ export const NAVIGATION: NavItem[] = [
     items: [
       { 
         title: "新手之路", 
-        path: "/wiki/guide-survival",
         items: [
           { title: "生存手册", path: "/wiki/guide-survival" },
           { title: "安装与配置", path: "/wiki/guide-install" },
@@ -454,10 +469,110 @@ export const MOCK_PAGES: WikiPage[] = [
     slug: "enchantments_guide",
     title: "附魔功能指南",
     category: "核心系统",
-    lastUpdated: "2026-03-07",
+    lastUpdated: "2026-04-30",
     content: "",
     icon: "✨",
     parent: "commands",
+  },
+  {
+    id: "enchant-sources",
+    slug: "enchant-sources",
+    title: "附魔获取途径",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "🧭",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-playstyles",
+    slug: "enchant-playstyles",
+    title: "附魔玩法分类",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "🗂️",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-combos",
+    slug: "enchant-combos",
+    title: "附魔推荐搭配",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "🧪",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-beginners",
+    slug: "enchant-beginners",
+    title: "附魔新手入门",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "🎓",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-curses",
+    slug: "enchant-curses",
+    title: "诅咒说明",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "☠️",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-faq",
+    slug: "enchant-faq",
+    title: "附魔 FAQ",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "❓",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-commands",
+    slug: "enchant-commands",
+    title: "附魔指令与查找",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "⌨️",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-placeholderapi",
+    slug: "enchant-placeholderapi",
+    title: "PlaceholderAPI 变量",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "📊",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-conflicts",
+    slug: "enchant-conflicts",
+    title: "附魔冲突说明",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "⚔️",
+    parent: "enchantments_guide",
+  },
+  {
+    id: "enchant-tradeoffs",
+    slug: "enchant-tradeoffs",
+    title: "冲突取舍建议",
+    category: "核心系统",
+    lastUpdated: "2026-04-30",
+    content: "",
+    icon: "🧠",
+    parent: "enchantments_guide",
   },
   {
     id: "redstone",

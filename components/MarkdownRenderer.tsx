@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Info, AlertTriangle, AlertCircle, CheckCircle, ZoomIn, X } from 'lucide-react';
 
 interface MarkdownRendererProps {
@@ -7,8 +7,8 @@ interface MarkdownRendererProps {
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   const [zoomImage, setZoomImage] = useState<string | null>(null);
+  const headingRefs = useRef<Map<string, HTMLElement>>(new Map());
 
-  // Body scroll lock when zoom image is active
   useEffect(() => {
     if (zoomImage) {
       document.body.style.overflow = 'hidden';
@@ -60,12 +60,13 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
   };
 
   const elements: React.ReactNode[] = [];
-  
+  let skippedFirstH1 = false;
+  const makeAnchorId = (text: string) => text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmedLine = line.trim();
 
-    // Handle Code Blocks
     if (trimmedLine.startsWith('```')) {
       if (!inCodeBlock) {
         inCodeBlock = true;
@@ -96,7 +97,6 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       continue;
     }
 
-    // Handle Admonitions (::: type title)
     if (trimmedLine.startsWith(':::')) {
       if (!inAdmonition) {
         inAdmonition = true;
@@ -117,24 +117,14 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       continue;
     }
 
-    // Handle Images
-  const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
+    const imgMatch = line.match(/!\[(.*?)\]\((.*?)\)/);
     if (imgMatch) {
       const alt = imgMatch[1];
       const src = imgMatch[2];
       elements.push(
         <div key={`img-${i}`} className="my-8 group relative">
-          <div 
-            className="relative cursor-zoom-in overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900"
-            onClick={() => setZoomImage(src)}
-          >
-            <img 
-              src={src} 
-              alt={alt} 
-              loading="lazy"
-              decoding="async"
-              className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.02]" 
-            />
+          <div className="relative cursor-zoom-in overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900" onClick={() => setZoomImage(src)}>
+            <img src={src} alt={alt} loading="lazy" decoding="async" className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.02]" />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
               <div className="bg-white/90 p-2 rounded-full shadow-lg dark:bg-slate-800/90 dark:text-white">
                 <ZoomIn size={20} />
@@ -147,47 +137,51 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       continue;
     }
 
-    // Handle Horizontal Rule
     if (trimmedLine === '---') {
       elements.push(<hr key={i} className="my-8 border-slate-200 dark:border-slate-800" />);
       continue;
     }
 
-    // Handle Headings
     if (line.startsWith('# ')) {
+      if (!skippedFirstH1) {
+        skippedFirstH1 = true;
+        continue;
+      }
       const text = line.slice(2);
-      const id = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+      const id = makeAnchorId(text);
       elements.push(<h1 key={i} id={id} className="text-3xl font-black text-slate-900 mt-16 mb-8 tracking-tight scroll-mt-24 dark:text-white">{text}</h1>);
       continue;
     }
     if (line.startsWith('## ')) {
       const text = line.slice(3);
-      const id = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+      const id = makeAnchorId(text);
       elements.push(<h2 key={i} id={id} className="text-2xl font-bold text-slate-800 mt-12 mb-6 pb-2 border-b border-slate-100 scroll-mt-24 dark:text-white dark:border-slate-800">{text}</h2>);
       continue;
     }
     if (line.startsWith('### ')) {
       const text = line.slice(4);
-      const id = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+      const id = makeAnchorId(text);
       elements.push(<h3 key={i} id={id} className="text-xl font-bold text-slate-800 mt-8 mb-4 scroll-mt-24 dark:text-white">{text}</h3>);
       continue;
     }
 
-    // Handle Lists
     if (line.startsWith('- ') || line.startsWith('* ')) {
-      const formatted = line.slice(2).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                   .replace(/\\`(.*?)\\`/g, '<code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
-                                   .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
-                                     let finalUrl = url;
-                                     if (url.startsWith('./')) {
-                                       // 处理相对路径，例如 [text](./core/Page) -> #/wiki/core/Page
-                                       const cleanUrl = url.replace('./', '');
-                                       finalUrl = `#/wiki/${cleanUrl}`;
-                                     } else if (url.startsWith('/wiki/')) {
-                                       finalUrl = `#${url}`;
-                                     }
-                                     return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
-                                   });
+      const formatted = line.slice(2)
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`(.*?)`/g, '<code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
+        .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
+          let finalUrl = url;
+          if (url.startsWith('#')) {
+            finalUrl = url;
+          } else if (url.startsWith('./')) {
+            const cleanUrl = url.replace('./', '');
+            finalUrl = `#${makeAnchorId(cleanUrl.split('/').pop() || cleanUrl)}`;
+          } else if (url.startsWith('/wiki/')) {
+            const cleanUrl = url.replace('/wiki/', '');
+            finalUrl = `#${makeAnchorId(cleanUrl.split('/').pop() || cleanUrl)}`;
+          }
+          return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
+        });
       elements.push(
         <div key={i} className="flex gap-3 mb-3 ml-4">
           <span className="text-indigo-400 select-none dark:text-indigo-600 font-black mt-1">•</span>
@@ -197,7 +191,6 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       continue;
     }
 
-    // Handle Blockquotes
     if (line.startsWith('> ')) {
       const formatted = line.slice(2).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       elements.push(
@@ -208,25 +201,22 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       continue;
     }
 
-    // Handle Empty Lines
     if (trimmedLine === '') {
       elements.push(<div key={i} className="h-4" />);
       continue;
     }
 
-    // Handle Tables
     if (line.startsWith('|')) {
       if (line.includes('---')) continue;
       const cells = line.split('|').filter((_, idx, arr) => idx > 0 && idx < arr.length - 1).map(c => c.trim());
-      
+
       if (!inTable) {
         inTable = true;
         tableRows = [cells];
       } else {
         tableRows.push(cells);
       }
-      
-      // Check if next line is also a table line
+
       const nextLine = lines[i + 1];
       if (!nextLine || !nextLine.trim().startsWith('|')) {
         inTable = false;
@@ -260,7 +250,6 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       continue;
     }
 
-    // Handle Paragraphs
     if (line.trim().length > 0) {
       const processedLine = line
         .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>')
@@ -268,15 +257,16 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
         .replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 bg-slate-100 text-indigo-600 rounded-md font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
         .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
           let finalUrl = url;
-          if (url.startsWith('./')) {
-            const cleanUrl = url.replace('./', '');
-            finalUrl = `#/wiki/${cleanUrl}`;
+          if (url.startsWith('#')) {
+            finalUrl = url;
+          } else if (url.startsWith('./')) {
+            finalUrl = `#${makeAnchorId(url.replace('./', ''))}`;
           } else if (url.startsWith('/wiki/')) {
-            finalUrl = `#${url}`;
+            finalUrl = `#${makeAnchorId(url.replace('/wiki/', '').split('/').pop() || url)}`;
           }
           return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
         });
-      
+
       elements.push(<p key={i} className="text-slate-700 leading-relaxed mb-6 dark:text-slate-300 text-lg" dangerouslySetInnerHTML={{ __html: processedLine }} />);
     }
   }
@@ -284,21 +274,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
   return (
     <div className="prose prose-slate max-w-none">
       {elements}
-      
-      {/* Image Zoom Overlay */}
       {zoomImage && (
-        <div 
-          className="fixed inset-0 z-100 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
-          onClick={() => setZoomImage(null)}
-        >
+        <div className="fixed inset-0 z-100 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300" onClick={() => setZoomImage(null)}>
           <button className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
             <X size={32} />
           </button>
-          <img 
-            src={zoomImage} 
-            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300" 
-            alt="Zoomed" 
-          />
+          <img src={zoomImage} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300" alt="Zoomed" />
         </div>
       )}
     </div>

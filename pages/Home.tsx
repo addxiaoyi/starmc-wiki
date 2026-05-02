@@ -197,10 +197,11 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
             {[
-              { label: "主连接线路", ip: SERVER_IPS.primary, icon: <Zap size={24} className={theme === 'voxel' ? 'text-emerald-500' : 'text-amber-500'} />, badge: "推荐" },
-              { label: "备用连接线路", ip: SERVER_IPS.secondary, icon: <Globe size={24} className={theme === 'voxel' ? 'text-teal-500' : 'text-blue-500'} />, badge: "稳定" }
+              { label: "Java版大厅主路", ip: SERVER_IPS.primary, icon: <Zap size={24} className={theme === 'voxel' ? 'text-emerald-500' : 'text-amber-500'} />, badge: "bgp均衡负载 / 南京 杭州 上海" },
+              { label: "Java版大厅主力", ip: SERVER_IPS.secondary, icon: <Globe size={24} className={theme === 'voxel' ? 'text-teal-500' : 'text-blue-500'} />, badge: "bgp主力 / 宿迁" },
+              { label: "Java版大厅备用", ip: SERVER_IPS.tertiary, icon: <Compass size={24} className={theme === 'voxel' ? 'text-amber-500' : 'text-emerald-500'} />, badge: "bgp备用 / 宿迁" }
             ].map((item, i) => (
               <div key={i} className={`group p-6 md:p-10 rounded-4xl md:rounded-[2.5rem] border transition-all duration-500 relative overflow-hidden ${
                 theme === 'blueprint' ? 'bg-slate-100/50 border-slate-200 hover:border-slate-400 hover:bg-white dark:bg-slate-900/50 dark:border-slate-800' :
@@ -216,7 +217,7 @@ const Home: React.FC = () => {
                   <div className={`p-4 rounded-2xl shadow-sm group-hover:rotate-6 transition-transform ${
                     theme === 'aura' ? 'bg-white/80 dark:bg-slate-800/80' : 'bg-white dark:bg-slate-800'
                   }`}>{item.icon}</div>
-                  <span className={`px-3 py-1 text-[10px] md:text-xs font-black rounded-full ${
+                  <span className={`px-3 py-1 text-[10px] md:text-xs font-black rounded-full text-center ${
                     theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
                     theme === 'aura' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
                     'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
