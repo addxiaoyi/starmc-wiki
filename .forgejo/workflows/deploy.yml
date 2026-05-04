@@ -1,4 +1,4 @@
-name: Build Codeberg Pages
+name: Deploy to Codeberg Pages
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -27,8 +27,28 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Upload pages artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: codeberg-pages
-          path: dist
+      - name: Deploy dist to pages branch
+        env:
+          CODEBERG_REPO: https://codeberg.org/addxiaoyi/starmc-wiki-page.git
+          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+        run: |
+          set -e
+          if [ -z "$CODEBERG_TOKEN" ]; then
+            echo "Missing CODEBERG_TOKEN secret" >&2
+            exit 1
+          fi
+          git config user.name "codeberg-actions[bot]"
+          git config user.email "codeberg-actions[bot]@users.noreply.codeberg.org"
+          git clone --depth 1 "$CODEBERG_REPO" deploy
+          cd deploy
+          if git show-ref --verify --quiet refs/remotes/origin/pages; then
+            git checkout pages
+          else
+            git checkout --orphan pages
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          cp -r ../dist/* .
+          git add .
+          git commit -m "deploy site" || echo "No changes to commit"
+          git push origin pages --force
