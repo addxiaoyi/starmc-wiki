@@ -77,7 +77,6 @@ export const NAVIGATION: NavItem[] = [
         items: [
           { title: "附魔冲突说明", path: "/wiki/enchant-conflicts" },
           { title: "附魔指令与查找", path: "/wiki/enchant-commands" },
-          { title: "PlaceholderAPI 变量", path: "/wiki/enchant-placeholderapi" },
         ]
       },
     ]
@@ -538,16 +537,7 @@ export const MOCK_PAGES: WikiPage[] = [
     icon: "⌨️",
     parent: "enchantments_guide",
   },
-  {
-    id: "enchant-placeholderapi",
-    slug: "enchant-placeholderapi",
-    title: "PlaceholderAPI 变量",
-    category: "核心系统",
-    lastUpdated: "2026-04-30",
-    content: "",
-    icon: "📊",
-    parent: "enchantments_guide",
-  },
+
   {
     id: "enchant-conflicts",
     slug: "enchant-conflicts",
