@@ -42,85 +42,47 @@ const Home: React.FC = () => {
     }`}>
       {/* Background Decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {theme === 'blueprint' && (
-          <div className="absolute inset-0 opacity-[0.15] dark:opacity-[0.07]" 
-               style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
-            <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[64px_64px]"></div>
-          </div>
-        )}
-        
-        {theme === 'aura' && (
-          <>
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-400/20 dark:bg-blue-600/10 blur-[120px] rounded-full animate-pulse"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-400/20 dark:bg-indigo-600/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-purple-400/10 dark:bg-purple-600/5 blur-[100px] rounded-full animate-bounce" style={{ animationDuration: '10s' }}></div>
-          </>
-        )}
-
-        {theme === 'voxel' && (
-          <div className="absolute inset-0 opacity-[0.1] dark:opacity-[0.05]">
-            <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000)', backgroundSize: '40px 40px', backgroundPosition: '0 0, 20px 20px' }}></div>
-          </div>
-        )}
+        <div className="absolute inset-0 opacity-[0.18] dark:opacity-[0.08]" style={{ backgroundImage: 'linear-gradient(to right, rgba(148,163,184,.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,.18) 1px, transparent 1px)', backgroundSize: '72px 72px' }} />
+        <div className="absolute inset-0 opacity-[0.06] dark:opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(59,130,246,.45) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+        <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute top-1/3 -right-24 h-80 w-80 rounded-full bg-indigo-500/10 blur-3xl" />
+        <div className="absolute bottom-[-8rem] left-[-6rem] h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12">
         {/* Hero Section - Magazine Layout */}
         <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12 lg:mb-24">
           <div className="lg:col-span-8 space-y-4 lg:space-y-8">
-            <div className={`inline-flex items-center gap-2 lg:gap-3 px-2 lg:px-3 py-1 rounded-full animate-in fade-in duration-1000 ${
-              theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border border-slate-800' :
-              theme === 'aura' ? 'bg-blue-50 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-900/50' :
-              'bg-emerald-100 border-2 border-emerald-500/20 dark:bg-emerald-950/30 dark:border-emerald-500/50'
-            }`}>
-              <span className="relative flex h-1.5 w-1.5 lg:h-2 lg:w-2">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                  theme === 'voxel' ? 'bg-emerald-400' : 'bg-blue-400'
-                }`}></span>
-                <span className={`relative inline-flex rounded-full h-1.5 w-1.5 lg:h-2 lg:w-2 ${
-                  theme === 'voxel' ? 'bg-emerald-500' : 'bg-blue-500'
-                }`}></span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-400/30 bg-slate-950/80 text-cyan-300 shadow-[0_0_24px_rgba(6,182,212,.15)] backdrop-blur-md animate-in fade-in duration-1000">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-300"></span>
               </span>
-              <span className={`text-[8px] lg:text-[10px] font-black uppercase tracking-[0.2em] ${
-                theme === 'blueprint' ? 'text-inherit' :
-                theme === 'aura' ? 'text-blue-700 dark:text-blue-400' :
-                'text-emerald-700 dark:text-emerald-400'
-              }`}>Documentation Hub v2.0</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.35em]">Documentation Hub v2.0</span>
             </div>
             
-            <h1 className="text-[clamp(2rem,12vw,8rem)] font-black tracking-tighter leading-[0.85] text-slate-900 dark:text-white animate-in fade-in slide-in-from-left-8 duration-1000 delay-150">
+            <h1 className="text-[clamp(2rem,12vw,8rem)] font-black tracking-tighter leading-[0.82] text-slate-900 dark:text-white animate-in fade-in slide-in-from-left-8 duration-1000 delay-150">
               {SERVER_NAME.split(' ')[0]}<br/>
-              <span className={`text-transparent bg-clip-text bg-linear-to-r ${
-                theme === 'blueprint' ? 'from-slate-700 to-slate-900 dark:from-slate-200 dark:to-white' :
-                theme === 'aura' ? 'from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400' :
-                'from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400'
-              }`}>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500 dark:from-cyan-300 dark:via-sky-300 dark:to-violet-300 drop-shadow-[0_0_18px_rgba(56,189,248,.18)]">
                 {SERVER_NAME.split(' ')[1] || 'WIKI'}
               </span>
             </h1>
           </div>
           
           <div className="lg:col-span-4 space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <p className={`text-[clamp(1.1rem,2vw,1.5rem)] text-slate-500 font-medium leading-tight dark:text-slate-400 border-l-4 pl-4 md:pl-6 transition-colors duration-500 ${
-              theme === 'blueprint' ? 'border-slate-900 dark:border-white' :
-              theme === 'aura' ? 'border-blue-600 dark:border-blue-400' :
-              'border-emerald-600 dark:border-emerald-400'
-            }`}>
+            <p className="text-[clamp(1.1rem,2vw,1.5rem)] text-slate-500 font-medium leading-tight dark:text-slate-400 border-l-4 border-cyan-400 pl-4 md:pl-6">
               这里是 StarMC 的文档中心，从硬核生电、休闲农场到社区社交，你想知道的都在这里。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Link 
                 to="/wiki/index" 
                 onMouseEnter={() => import('./WikiPage')}
-                className={`flex-1 px-6 md:px-8 py-4 md:py-5 font-bold rounded-2xl flex items-center justify-between group hover:-translate-y-1 hover:shadow-2xl active:scale-[0.98] transition-all duration-300 ${
-                theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
-                theme === 'aura' ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/20' :
-                'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-emerald-500/20'
-              }`}>
+                className="flex-1 px-6 md:px-8 py-4 md:py-5 font-bold rounded-2xl flex items-center justify-between group bg-cyan-500 text-slate-950 hover:bg-cyan-400 hover:shadow-[0_0_30px_rgba(34,211,238,.22)] active:scale-[0.98] transition-all duration-300 border border-cyan-300/40"
+              >
                 立即开始探索
                 <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a href={OFFICIAL_WEBSITE} target="_blank" rel="noreferrer" className="px-6 md:px-8 py-4 md:py-5 bg-white border border-slate-200 text-slate-900 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-50 hover:-translate-y-1 hover:border-blue-200 active:scale-[0.98] transition-all duration-300 dark:bg-slate-950 dark:border-slate-800 dark:text-white dark:hover:bg-slate-900">
+              <a href={OFFICIAL_WEBSITE} target="_blank" rel="noreferrer" className="px-6 md:px-8 py-4 md:py-5 bg-slate-950/90 border border-cyan-400/20 text-cyan-100 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-900 hover:-translate-y-1 hover:shadow-[0_0_24px_rgba(59,130,246,.14)] active:scale-[0.98] transition-all duration-300">
                 官网
                 <ArrowUpRight size={20} />
               </a>
@@ -129,47 +91,33 @@ const Home: React.FC = () => {
         </header>
 
         {/* Featured Section - Grid System */}
-        <section className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px rounded-4xl md:rounded-[3rem] overflow-hidden border mb-20 md:mb-32 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 ${
-          theme === 'blueprint' ? 'bg-slate-200 border-slate-200 dark:bg-slate-800 dark:border-slate-800' :
-          theme === 'aura' ? 'bg-slate-200/50 border-slate-200/50 backdrop-blur-xl dark:bg-slate-800/50 dark:border-slate-800/50' :
-          'bg-stone-200 border-stone-200 dark:bg-slate-800 dark:border-slate-800'
-        }`}>
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px rounded-4xl md:rounded-[3rem] overflow-hidden border border-cyan-400/20 mb-20 md:mb-32 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 bg-slate-950/60 shadow-[0_0_60px_rgba(34,211,238,.08)] backdrop-blur-xl">
           {[
             { 
               title: "生存与经营", 
               desc: "纯净生存底色，配合农场、技能等长期玩法，让生存不再只有挖矿",
-              icon: <Zap className={theme === 'voxel' ? 'text-emerald-500' : 'text-blue-500'} />,
-              bg: theme === 'aura' ? 'bg-white/70 dark:bg-slate-950/70' : 'bg-white dark:bg-slate-950'
+              icon: <Zap className="text-cyan-300" />, 
             },
             { 
               title: "深度探索", 
               desc: "任务系统与世界资源点分布，给喜欢跑图和收集的你更多理由",
-              icon: <Compass className={theme === 'voxel' ? 'text-teal-500' : 'text-indigo-500'} />,
-              bg: theme === 'aura' ? 'bg-white/70 dark:bg-slate-950/70' : 'bg-white dark:bg-slate-950'
+              icon: <Compass className="text-sky-300" />, 
             },
             { 
               title: "社区社交", 
               desc: "婚姻、公会、表情动作，在服务器里找到能玩到一块的伙伴",
-              icon: <Globe className={theme === 'voxel' ? 'text-amber-500' : 'text-emerald-500'} />,
-              bg: theme === 'aura' ? 'bg-white/70 dark:bg-slate-950/70' : 'bg-white dark:bg-slate-950'
+              icon: <Globe className="text-indigo-300" />, 
             }
           ].map((item, i) => (
-            <div key={i} className={`p-8 md:p-12 ${item.bg} hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-all duration-500 group relative overflow-hidden`}>
-              <div className={`absolute inset-0 bg-linear-to-br from-transparent opacity-0 group-hover:opacity-100 transition-opacity ${
-                theme === 'blueprint' ? 'group-hover:from-slate-500/5' :
-                theme === 'aura' ? 'group-hover:from-blue-500/10' :
-                'group-hover:from-emerald-500/10'
-              }`} />
+            <div key={i} className="relative overflow-hidden bg-slate-950 p-8 md:p-12 transition-all duration-500 group hover:bg-slate-900/80">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.16),transparent_45%),linear-gradient(135deg,rgba(2,6,23,.35),transparent)] opacity-90" />
+              <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage: 'linear-gradient(rgba(148,163,184,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.35) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
               <div className="relative z-10">
-                <div className={`mb-6 md:mb-8 p-4 w-fit rounded-2xl group-hover:scale-110 group-hover:shadow-xl transition-all duration-500 ${
-                  theme === 'blueprint' ? 'bg-slate-50 dark:bg-slate-900 group-hover:bg-white dark:group-hover:bg-slate-800' :
-                  theme === 'aura' ? 'bg-blue-50 dark:bg-blue-900/30 group-hover:bg-white dark:group-hover:bg-blue-900/50' :
-                  'bg-emerald-50 dark:bg-emerald-950/30 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50'
-                }`}>
+                <div className="mb-6 md:mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 shadow-[0_0_24px_rgba(34,211,238,.12)] transition-transform duration-500 group-hover:scale-110">
                   {item.icon}
                 </div>
-                <h3 className="text-2xl md:text-3xl font-black mb-4 dark:text-white group-hover:translate-x-1 transition-transform">{item.title}</h3>
-                <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 font-medium leading-relaxed group-hover:translate-x-1 transition-transform delay-75">{item.desc}</p>
+                <h3 className="text-2xl md:text-3xl font-black mb-4 text-white group-hover:translate-x-1 transition-transform">{item.title}</h3>
+                <p className="text-sm md:text-base text-slate-300 font-medium leading-relaxed group-hover:translate-x-1 transition-transform delay-75">{item.desc}</p>
               </div>
             </div>
           ))}
