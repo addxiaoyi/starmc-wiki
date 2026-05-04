@@ -201,6 +201,11 @@ const WikiPage: React.FC = () => {
     lastUpdated: meta.lastUpdated || basePageInfo?.lastUpdated || '2026-02-10',
   }), [basePageInfo, meta, slug]);
 
+  const pageBadge = useMemo(() => {
+    const source = displayInfo?.title || slug || 'W';
+    return source.slice(0, 1).toUpperCase();
+  }, [displayInfo, slug]);
+
   // 获取子页面 (通过 parent 字段)
   const subPages = useMemo(() => {
     return MOCK_PAGES.filter(p => p.parent === slug);
@@ -416,11 +421,9 @@ const WikiPage: React.FC = () => {
                   <Tag size={12} />
                   <span className="whitespace-nowrap">{displayInfo?.category || '文档'}</span>
                 </div>
-                {displayInfo?.icon && (
-                  <div className="flex items-center gap-1.5 px-2 py-1 bg-indigo-50 text-indigo-600 rounded-md dark:bg-indigo-950 dark:text-indigo-400">
-                    <span className="text-base lg:text-lg">{displayInfo.icon}</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 text-slate-600 rounded-md dark:bg-slate-900 dark:text-slate-400">
+                  <span className="text-base lg:text-lg">{pageBadge}</span>
+                </div>
               </div>
               <h1 className="text-3xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight dark:text-white wrap-break-word mb-4">
                 {displayInfo?.title || slug}

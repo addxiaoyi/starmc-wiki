@@ -3,7 +3,6 @@ TITLE: 3 分钟入服指南
 CATEGORY: 新手入门
 LAST_UPDATED: 2026-05-04
 PARENT: intro
-ICON: ⚡
 -->
 
 # 3 分钟入服指南

@@ -3,7 +3,6 @@ TITLE: 诅咒说明
 CATEGORY: 核心系统
 LAST_UPDATED: 2026-04-30
 PARENT: enchantments_guide
-ICON: ☠️
 -->
 
 # 诅咒说明

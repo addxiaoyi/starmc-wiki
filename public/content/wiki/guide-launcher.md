@@ -3,7 +3,6 @@ TITLE: 启动器设置建议
 CATEGORY: 新手入门
 LAST_UPDATED: 2026-05-04
 PARENT: intro
-ICON: 🧰
 -->
 
 # 启动器设置建议

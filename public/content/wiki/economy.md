@@ -3,7 +3,6 @@ TITLE: 经济与贸易
 CATEGORY: 世界基础
 LAST_UPDATED: 2026-05-04
 PARENT:
-ICON: 💰
 -->
 
 # 经济与贸易

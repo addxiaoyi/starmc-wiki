@@ -3,7 +3,6 @@ TITLE: 附魔 FAQ
 CATEGORY: 核心系统
 LAST_UPDATED: 2026-04-30
 PARENT: enchantments_guide
-ICON: ❓
 -->
 
 # 附魔 FAQ

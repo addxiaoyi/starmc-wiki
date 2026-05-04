@@ -3,7 +3,6 @@ TITLE: 服务器规范
 CATEGORY: 新手入门
 LAST_UPDATED: 2026-05-04
 PARENT: intro
-ICON: ⚖️
 -->
 
 # 服务器规范

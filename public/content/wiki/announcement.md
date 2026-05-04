@@ -3,7 +3,6 @@ TITLE: 更新日志
 CATEGORY: 新手入门
 LAST_UPDATED: 2026-05-04
 PARENT:
-ICON: 🗞️
 -->
 
 # 更新日志

@@ -3,7 +3,6 @@ TITLE: 附魔冲突说明
 CATEGORY: 玩家教程
 LAST_UPDATED: 2026-05-04
 PARENT: enchantments_guide
-ICON: ⚔️
 -->
 
 # 附魔冲突说明

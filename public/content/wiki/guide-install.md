@@ -3,7 +3,6 @@ TITLE: 加入教程
 CATEGORY: 新手入门
 LAST_UPDATED: 2026-05-04
 PARENT: intro
-ICON: 🚀
 -->
 
 # 加入教程

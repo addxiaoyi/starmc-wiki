@@ -3,7 +3,6 @@ TITLE: 附魔玩法分类
 CATEGORY: 核心系统
 LAST_UPDATED: 2026-05-04
 PARENT: enchantments_guide
-ICON: 🗂️
 -->
 
 # 附魔玩法分类

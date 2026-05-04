@@ -3,7 +3,6 @@ TITLE: 常见问题 FAQ
 CATEGORY: 新手入门
 LAST_UPDATED: 2026-05-04
 PARENT: intro
-ICON: ❓
 -->
 
 # 常见问题 FAQ

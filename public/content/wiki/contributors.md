@@ -3,7 +3,6 @@ TITLE: 贡献者名单
 CATEGORY: 维护
 LAST_UPDATED: 2026-05-04
 PARENT:
-ICON: 👥
 -->
 
 # 贡献者名单
