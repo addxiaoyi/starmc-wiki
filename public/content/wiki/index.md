@@ -31,7 +31,7 @@
 
 - [基础指令](./commands)
 - [经济与贸易](./economy)
-- [服务器矩阵](./server-matrix)
+- [服务器分区概览](./server-matrix)
 - [红石限制说明](./redstone)
 
 ### 我想研究进阶玩法
