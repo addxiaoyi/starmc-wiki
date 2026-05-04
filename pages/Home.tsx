@@ -253,12 +253,12 @@ const Home: React.FC = () => {
         </section>
 
         {/* Footer Editorial */}
-        <footer className={`border-t pt-20 pb-32 grid grid-cols-1 lg:grid-cols-12 gap-12 ${
+        <footer className={`border-t pt-20 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 ${
           theme === 'blueprint' ? 'border-slate-200 dark:border-slate-800' :
           theme === 'aura' ? 'border-blue-100 dark:border-blue-900/50' :
           'border-emerald-100 dark:border-emerald-900/50'
         }`}>
-          <div className="lg:col-span-6 space-y-6">
+          <div className="lg:col-span-5 space-y-6">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-xl ${
                 theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
@@ -285,7 +285,7 @@ const Home: React.FC = () => {
                 theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
                 theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
                 'text-slate-900 dark:text-white hover:text-emerald-600'
-              }`}>社区准则</Link></li>
+              }`}>新手路线</Link></li>
               <li><a href={OFFICIAL_WEBSITE} className={`text-lg font-bold transition-colors ${
                 theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
                 theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
@@ -293,11 +293,31 @@ const Home: React.FC = () => {
               }`}>官方网站</a></li>
             </ul>
           </div>
-          <div className="lg:col-span-3 space-y-4 text-right">
-             <div className="text-sm font-black text-slate-400 uppercase tracking-widest">© 2026 STARMC</div>
-             <p className="text-slate-500 dark:text-slate-400 font-medium text-xs">
-               Crafted with passion for the Minecraft community.
-             </p>
+          <div className="lg:col-span-4 space-y-4">
+            <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">贡献者</h4>
+            <a href="https://github.com/addxiaoyi" target="_blank" rel="noreferrer" className={`group flex items-center gap-4 rounded-3xl border px-4 py-4 transition-all hover:-translate-y-0.5 ${
+              theme === 'blueprint' ? 'border-slate-200 bg-white hover:shadow-lg dark:border-slate-800 dark:bg-slate-950' :
+              theme === 'aura' ? 'border-blue-100 bg-white/80 hover:shadow-lg hover:shadow-blue-500/10 dark:border-blue-900/50 dark:bg-slate-950/80' :
+              'border-emerald-100 bg-white hover:shadow-lg hover:shadow-emerald-500/10 dark:border-emerald-900/50 dark:bg-slate-950'
+            }`}>
+              <img
+                src="https://github.com/addxiaoyi.png"
+                alt="addxiaoyi avatar"
+                className="h-12 w-12 rounded-2xl border border-slate-200 object-cover dark:border-slate-800"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-slate-900 dark:text-white">addxiaoyi</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-widest ${
+                    theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
+                    theme === 'aura' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                    'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                  }`}>维护者</span>
+                </div>
+                <p className="truncate text-sm text-slate-500 dark:text-slate-400">github.com/addxiaoyi</p>
+              </div>
+              <ArrowUpRight size={18} className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
           </div>
         </footer>
       </div>
