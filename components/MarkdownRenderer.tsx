@@ -3,9 +3,25 @@ import { Info, AlertTriangle, AlertCircle, CheckCircle, ZoomIn, X } from 'lucide
 
 interface MarkdownRendererProps {
   content: string;
+  currentPath?: string;
 }
 
-export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
+export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, currentPath = '' }) => {
+  const handleAnchorClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement | null;
+    const anchor = target?.closest('a') as HTMLAnchorElement | null;
+    if (!anchor) return;
+    const href = anchor.getAttribute('href') || '';
+    if (href.startsWith('#') && !href.startsWith('#/')) {
+      e.preventDefault();
+      const id = href.slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', `${window.location.pathname}${window.location.search}${href}`);
+      }
+    }
+  };
   const [zoomImage, setZoomImage] = useState<string | null>(null);
   const headingRefs = useRef<Map<string, HTMLElement>>(new Map());
 
@@ -174,11 +190,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
           if (url.startsWith('#')) {
             finalUrl = url;
           } else if (url.startsWith('./')) {
-            const cleanUrl = url.replace('./', '');
-            finalUrl = `#${makeAnchorId(cleanUrl.split('/').pop() || cleanUrl)}`;
+            const cleanUrl = url.replace('./', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
+            finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
           } else if (url.startsWith('/wiki/')) {
-            const cleanUrl = url.replace('/wiki/', '');
-            finalUrl = `#${makeAnchorId(cleanUrl.split('/').pop() || cleanUrl)}`;
+            const cleanUrl = url.replace('/wiki/', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
+            finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
           }
           return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
         });
@@ -260,9 +276,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
           if (url.startsWith('#')) {
             finalUrl = url;
           } else if (url.startsWith('./')) {
-            finalUrl = `#${makeAnchorId(url.replace('./', ''))}`;
+            const cleanUrl = url.replace('./', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
+            finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
           } else if (url.startsWith('/wiki/')) {
-            finalUrl = `#${makeAnchorId(url.replace('/wiki/', '').split('/').pop() || url)}`;
+            const cleanUrl = url.replace('/wiki/', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
+            finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
           }
           return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
         });
@@ -272,7 +290,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
   }
 
   return (
-    <div className="prose prose-slate max-w-none">
+    <div className="prose prose-slate max-w-none" onClick={handleAnchorClick}>
       {elements}
       {zoomImage && (
         <div className="fixed inset-0 z-100 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300" onClick={() => setZoomImage(null)}>
