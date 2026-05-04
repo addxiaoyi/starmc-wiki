@@ -7,15 +7,12 @@ import {
   Terminal, 
   Globe, 
   Zap, 
-  Check, 
-  Search,
-  Layout as LayoutIcon,
-  ShieldCheck,
-  Cpu,
+  Check,
   ArrowUpRight,
-  Box,
-  Layers,
-  Code
+  BookOpen,
+  Wrench,
+  History,
+  Users
 } from 'lucide-react';
 import { SERVER_NAME, SERVER_IPS, OFFICIAL_WEBSITE } from '../constants';
 
@@ -253,72 +250,100 @@ const Home: React.FC = () => {
         </section>
 
         {/* Footer Editorial */}
-        <footer className={`border-t pt-20 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 ${
+        <footer className={`border-t pt-20 pb-24 space-y-16 ${
           theme === 'blueprint' ? 'border-slate-200 dark:border-slate-800' :
           theme === 'aura' ? 'border-blue-100 dark:border-blue-900/50' :
           'border-emerald-100 dark:border-emerald-900/50'
         }`}>
-          <div className="lg:col-span-5 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-xl ${
-                theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
-                theme === 'aura' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' :
-                'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
-              }`}>
-                <Terminal size={24} />
-              </div>
-              <span className="text-2xl font-black tracking-tighter dark:text-white uppercase">StarMC Wiki</span>
-            </div>
-            <p className="text-slate-500 dark:text-slate-400 font-medium max-w-sm">
-              舵星归途 StarMC 官方服务器 Wiki。在这里，每一行文档都为你指引归途。
-            </p>
-          </div>
-          <div className="lg:col-span-3 space-y-4">
-            <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">快速链接</h4>
-            <ul className="space-y-2">
-              <li><Link to="/wiki/index" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
-                theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
-                theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
-                'text-slate-900 dark:text-white hover:text-emerald-600'
-              }`}>Wiki 首页</Link></li>
-              <li><Link to="/wiki/intro" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
-                theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
-                theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
-                'text-slate-900 dark:text-white hover:text-emerald-600'
-              }`}>新手路线</Link></li>
-              <li><a href={OFFICIAL_WEBSITE} className={`text-lg font-bold transition-colors ${
-                theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
-                theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
-                'text-slate-900 dark:text-white hover:text-emerald-600'
-              }`}>官方网站</a></li>
-            </ul>
-          </div>
-          <div className="lg:col-span-4 space-y-4">
-            <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">贡献者</h4>
-            <a href="https://github.com/addxiaoyi" target="_blank" rel="noreferrer" className={`group flex items-center gap-4 rounded-3xl border px-4 py-4 transition-all hover:-translate-y-0.5 ${
-              theme === 'blueprint' ? 'border-slate-200 bg-white hover:shadow-lg dark:border-slate-800 dark:bg-slate-950' :
-              theme === 'aura' ? 'border-blue-100 bg-white/80 hover:shadow-lg hover:shadow-blue-500/10 dark:border-blue-900/50 dark:bg-slate-950/80' :
-              'border-emerald-100 bg-white hover:shadow-lg hover:shadow-emerald-500/10 dark:border-emerald-900/50 dark:bg-slate-950'
-            }`}>
-              <img
-                src="https://github.com/addxiaoyi.png"
-                alt="addxiaoyi avatar"
-                className="h-12 w-12 rounded-2xl border border-slate-200 object-cover dark:border-slate-800"
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-black text-slate-900 dark:text-white">addxiaoyi</span>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-widest ${
-                    theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
-                    theme === 'aura' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
-                    'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                  }`}>维护者</span>
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-5 space-y-6">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-xl ${
+                  theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
+                  theme === 'aura' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' :
+                  'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                }`}>
+                  <Terminal size={24} />
                 </div>
-                <p className="truncate text-sm text-slate-500 dark:text-slate-400">github.com/addxiaoyi</p>
+                <span className="text-2xl font-black tracking-tighter dark:text-white uppercase">StarMC Wiki</span>
               </div>
-              <ArrowUpRight size={18} className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </a>
-          </div>
+              <p className="text-slate-500 dark:text-slate-400 font-medium max-w-sm">
+                舵星归途 StarMC 官方服务器 Wiki。在这里，每一行文档都为你指引归途。
+              </p>
+            </div>
+            <div className="lg:col-span-3 space-y-4">
+              <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">快速入口</h4>
+              <ul className="space-y-2">
+                <li><Link to="/wiki/index" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
+                  theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
+                  theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
+                  'text-slate-900 dark:text-white hover:text-emerald-600'
+                }`}>Wiki 首页</Link></li>
+                <li><Link to="/wiki/intro" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
+                  theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
+                  theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
+                  'text-slate-900 dark:text-white hover:text-emerald-600'
+                }`}>新手路线</Link></li>
+                <li><Link to="/wiki/commands" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
+                  theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
+                  theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
+                  'text-slate-900 dark:text-white hover:text-emerald-600'
+                }`}>常用功能</Link></li>
+                <li><Link to="/wiki/announcement" onMouseEnter={() => import('./WikiPage')} className={`text-lg font-bold transition-colors ${
+                  theme === 'blueprint' ? 'text-slate-900 dark:text-white hover:text-slate-600' :
+                  theme === 'aura' ? 'text-slate-900 dark:text-white hover:text-blue-600' :
+                  'text-slate-900 dark:text-white hover:text-emerald-600'
+                }`}>更新日志</Link></li>
+              </ul>
+            </div>
+            <div className="lg:col-span-4 space-y-4">
+              <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">贡献者</h4>
+              <a href="https://github.com/addxiaoyi" target="_blank" rel="noreferrer" className={`group flex items-center gap-4 rounded-3xl border px-4 py-4 transition-all hover:-translate-y-0.5 ${
+                theme === 'blueprint' ? 'border-slate-200 bg-white hover:shadow-lg dark:border-slate-800 dark:bg-slate-950' :
+                theme === 'aura' ? 'border-blue-100 bg-white/80 hover:shadow-lg hover:shadow-blue-500/10 dark:border-blue-900/50 dark:bg-slate-950/80' :
+                'border-emerald-100 bg-white hover:shadow-lg hover:shadow-emerald-500/10 dark:border-emerald-900/50 dark:bg-slate-950'
+              }`}>
+                <img
+                  src="https://github.com/addxiaoyi.png"
+                  alt="addxiaoyi avatar"
+                  className="h-12 w-12 rounded-2xl border border-slate-200 object-cover dark:border-slate-800"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-slate-900 dark:text-white">addxiaoyi</span>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-widest ${
+                      theme === 'blueprint' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' :
+                      theme === 'aura' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                      'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                    }`}>维护者</span>
+                  </div>
+                  <p className="truncate text-sm text-slate-500 dark:text-slate-400">github.com/addxiaoyi</p>
+                </div>
+                <ArrowUpRight size={18} className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </div>
+          </section>
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: BookOpen, title: '新手路线', desc: '先看加入教程、入门必看、服务器规范。', href: '/wiki/intro' },
+              { icon: Wrench, title: '常用功能', desc: '常用指令、领地、经济和基础设置一页就够。', href: '/wiki/commands' },
+              { icon: History, title: '更新日志', desc: '先看公告页，及时了解规则和内容变化。', href: '/wiki/announcement' },
+            ].map((item, i) => (
+              <Link key={i} to={item.href} onMouseEnter={() => import('./WikiPage')} className={`group rounded-3xl border p-6 transition-all hover:-translate-y-1 hover:shadow-xl ${
+                theme === 'blueprint' ? 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950' :
+                theme === 'aura' ? 'border-blue-100 bg-white/80 dark:border-blue-900/50 dark:bg-slate-950/80' :
+                'border-emerald-100 bg-white dark:border-emerald-900/50 dark:bg-slate-950'
+              }`}>
+                <div className="mb-4 flex items-center gap-3">
+                  <div className={`rounded-2xl p-3 ${theme === 'voxel' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-300'}`}>
+                    <item.icon size={20} />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white">{item.title}</h3>
+                </div>
+                <p className="text-sm leading-6 text-slate-500 dark:text-slate-400">{item.desc}</p>
+              </Link>
+            ))}
+          </section>
         </footer>
       </div>
     </div>
