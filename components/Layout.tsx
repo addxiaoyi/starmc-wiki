@@ -132,7 +132,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
                 <button
                   type="button"
                   onClick={handleToggle}
-                  className={`group flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${isExpanded || isAncestorActive ? 'bg-white font-semibold text-slate-950 shadow-sm dark:bg-slate-950 dark:text-white' : 'font-medium text-slate-700 hover:bg-white hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-950 dark:hover:text-white'}`}
+                  className={`group flex w-full items-center justify-between px-2 py-2 text-left text-sm transition-colors ${isExpanded || isAncestorActive ? 'font-semibold text-slate-950 dark:text-white' : 'font-medium text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'}`}
                 >
                   <span className="flex items-center gap-2 leading-5">
                     {item.icon && <span className="text-base opacity-80">{item.icon}</span>}
@@ -145,7 +145,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
                   to={item.path}
                   onClick={() => globalThis.innerWidth < 1024 && onClose()}
                   onMouseEnter={() => { if (item.path.startsWith('/wiki/')) import('../pages/WikiPage'); }}
-                  className={`block rounded-lg px-3 py-2.5 text-sm leading-5 transition-colors ${isActive ? 'bg-white font-semibold text-slate-950 shadow-sm dark:bg-slate-950 dark:text-white' : 'font-medium text-slate-700 hover:bg-white hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-950 dark:hover:text-white'}`}
+                  className={`block px-2 py-2 text-sm leading-5 transition-colors ${isActive ? 'font-semibold text-slate-950 dark:text-white' : 'font-medium text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'}`}
                 >
                   <span className="flex items-center gap-2">
                     {item.icon && <span className="text-base opacity-80">{item.icon}</span>}
