@@ -42,47 +42,47 @@ const Home: React.FC = () => {
     }`}>
       {/* Background Decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.18] dark:opacity-[0.08]" style={{ backgroundImage: 'linear-gradient(to right, rgba(148,163,184,.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,.18) 1px, transparent 1px)', backgroundSize: '72px 72px' }} />
-        <div className="absolute inset-0 opacity-[0.06] dark:opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(59,130,246,.45) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-        <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-24 h-80 w-80 rounded-full bg-indigo-500/10 blur-3xl" />
-        <div className="absolute bottom-[-8rem] left-[-6rem] h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="absolute inset-0 opacity-[0.08] dark:opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(to right, rgba(148,163,184,.14) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,.14) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(148,163,184,.32) 1px, transparent 0)', backgroundSize: '28px 28px' }} />
+        <div className="absolute -top-28 left-1/4 h-72 w-72 rounded-full bg-slate-900/5 blur-3xl dark:bg-white/5" />
+        <div className="absolute top-1/3 -right-24 h-80 w-80 rounded-full bg-slate-500/5 blur-3xl dark:bg-slate-400/5" />
+        <div className="absolute bottom-[-8rem] left-[-6rem] h-96 w-96 rounded-full bg-slate-700/5 blur-3xl dark:bg-slate-300/5" />
       </div>
 
       <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12">
         {/* Hero Section - Magazine Layout */}
         <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12 lg:mb-24">
           <div className="lg:col-span-8 space-y-4 lg:space-y-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-400/30 bg-slate-950/80 text-cyan-300 shadow-[0_0_24px_rgba(6,182,212,.15)] backdrop-blur-md animate-in fade-in duration-1000">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200/80 bg-white/85 text-slate-500 shadow-sm backdrop-blur-md animate-in fade-in duration-1000 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-400">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-300"></span>
+                <span className="absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-60 animate-ping"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
               </span>
-              <span className="text-[10px] font-black uppercase tracking-[0.35em]">Documentation Hub v2.0</span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">Documentation Hub v2.0</span>
             </div>
             
-            <h1 className="text-[clamp(2rem,12vw,8rem)] font-black tracking-tighter leading-[0.82] text-slate-900 dark:text-white animate-in fade-in slide-in-from-left-8 duration-1000 delay-150">
+            <h1 className="text-[clamp(2rem,12vw,8rem)] font-semibold tracking-[-0.07em] leading-[0.88] text-slate-950 dark:text-white animate-in fade-in slide-in-from-left-8 duration-1000 delay-150">
               {SERVER_NAME.split(' ')[0]}<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500 dark:from-cyan-300 dark:via-sky-300 dark:to-violet-300 drop-shadow-[0_0_18px_rgba(56,189,248,.18)]">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-b from-slate-700 to-slate-900 dark:from-slate-200 dark:to-white">
                 {SERVER_NAME.split(' ')[1] || 'WIKI'}
               </span>
             </h1>
           </div>
           
           <div className="lg:col-span-4 space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <p className="text-[clamp(1.1rem,2vw,1.5rem)] text-slate-500 font-medium leading-tight dark:text-slate-400 border-l-4 border-cyan-400 pl-4 md:pl-6">
-              这里是 StarMC 的文档中心，从硬核生电、休闲农场到社区社交，你想知道的都在这里。
+            <p className="text-[clamp(1.05rem,2vw,1.35rem)] text-slate-500 font-normal leading-tight dark:text-slate-400 border-l-4 border-slate-300 pl-4 md:pl-6 max-w-md">
+              这里是 StarMC 的文档中心。你想找的新手路线、常用功能、更新日志，都已经整理好了。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Link 
                 to="/wiki/index" 
                 onMouseEnter={() => import('./WikiPage')}
-                className="flex-1 px-6 md:px-8 py-4 md:py-5 font-bold rounded-2xl flex items-center justify-between group bg-cyan-500 text-slate-950 hover:bg-cyan-400 hover:shadow-[0_0_30px_rgba(34,211,238,.22)] active:scale-[0.98] transition-all duration-300 border border-cyan-300/40"
+                className="flex-1 px-6 md:px-8 py-4 md:py-5 font-semibold rounded-2xl flex items-center justify-between group bg-slate-950 text-white hover:bg-slate-800 active:scale-[0.98] transition-all duration-300 shadow-sm"
               >
                 立即开始探索
                 <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a href={OFFICIAL_WEBSITE} target="_blank" rel="noreferrer" className="px-6 md:px-8 py-4 md:py-5 bg-slate-950/90 border border-cyan-400/20 text-cyan-100 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-900 hover:-translate-y-1 hover:shadow-[0_0_24px_rgba(59,130,246,.14)] active:scale-[0.98] transition-all duration-300">
+              <a href={OFFICIAL_WEBSITE} target="_blank" rel="noreferrer" className="px-6 md:px-8 py-4 md:py-5 bg-white border border-slate-200 text-slate-900 font-semibold rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-[0.98] transition-all duration-300 dark:bg-slate-950 dark:border-slate-800 dark:text-white dark:hover:bg-slate-900">
                 官网
                 <ArrowUpRight size={20} />
               </a>
@@ -91,7 +91,7 @@ const Home: React.FC = () => {
         </header>
 
         {/* Featured Section - Grid System */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px rounded-4xl md:rounded-[3rem] overflow-hidden border border-cyan-400/20 mb-20 md:mb-32 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 bg-slate-950/60 shadow-[0_0_60px_rgba(34,211,238,.08)] backdrop-blur-xl">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px rounded-[2rem] overflow-hidden border border-slate-200 bg-white mb-20 md:mb-32 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500 shadow-[0_20px_70px_rgba(15,23,42,.06)] dark:border-slate-800 dark:bg-slate-950">
           {[
             { 
               title: "生存与经营", 
@@ -109,15 +109,16 @@ const Home: React.FC = () => {
               icon: <Globe className="text-indigo-300" />, 
             }
           ].map((item, i) => (
-            <div key={i} className="relative overflow-hidden bg-slate-950 p-8 md:p-12 transition-all duration-500 group hover:bg-slate-900/80">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.16),transparent_45%),linear-gradient(135deg,rgba(2,6,23,.35),transparent)] opacity-90" />
-              <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage: 'linear-gradient(rgba(148,163,184,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.35) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+            <div key={i} className="relative overflow-hidden bg-white p-8 md:p-12 transition-all duration-500 group hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900/70">
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.24))] dark:bg-[linear-gradient(180deg,rgba(15,23,42,.92),rgba(15,23,42,.75))]" />
+              <div className="absolute inset-x-0 top-0 h-px bg-slate-200/80 dark:bg-slate-800" />
+              <div className="absolute inset-0 opacity-[0.06] dark:opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(148,163,184,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.35) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
               <div className="relative z-10">
-                <div className="mb-6 md:mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 shadow-[0_0_24px_rgba(34,211,238,.12)] transition-transform duration-500 group-hover:scale-110">
+                <div className="mb-6 md:mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition-transform duration-500 group-hover:scale-105 dark:border-slate-800 dark:bg-slate-950">
                   {item.icon}
                 </div>
-                <h3 className="text-2xl md:text-3xl font-black mb-4 text-white group-hover:translate-x-1 transition-transform">{item.title}</h3>
-                <p className="text-sm md:text-base text-slate-300 font-medium leading-relaxed group-hover:translate-x-1 transition-transform delay-75">{item.desc}</p>
+                <h3 className="text-2xl md:text-3xl font-semibold tracking-[-0.04em] mb-4 text-slate-950 dark:text-white group-hover:translate-x-0.5 transition-transform">{item.title}</h3>
+                <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 font-normal leading-relaxed group-hover:translate-x-0.5 transition-transform delay-75">{item.desc}</p>
               </div>
             </div>
           ))}
@@ -127,8 +128,8 @@ const Home: React.FC = () => {
         <section className="mb-24 md:mb-40">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12 md:mb-16">
             <div className="max-w-xl">
-              <h2 className="text-4xl md:text-5xl font-black mb-4 md:mb-6 dark:text-white tracking-tight">服务器接入点</h2>
-              <p className="text-lg md:text-xl text-slate-500 font-medium dark:text-slate-400">
+              <h2 className="text-4xl md:text-5xl font-semibold mb-4 md:mb-6 text-slate-950 dark:text-white tracking-[-0.05em]">服务器接入点</h2>
+              <p className="text-lg md:text-xl text-slate-500 font-normal dark:text-slate-400 max-w-2xl">
                 选择最适合你的连接线路。建议根据你的网络环境优先尝试主线路。
               </p>
             </div>
