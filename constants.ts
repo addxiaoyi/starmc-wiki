@@ -174,24 +174,7 @@ export const MOCK_PAGES: WikiPage[] = [
     content: "",
     icon: "🏠"
   },
-  {
-    id: "contributing",
-    slug: "contributing",
-    title: "贡献指南与 MD 规范",
-    category: "开发者与贡献者",
-    lastUpdated: "2026-02-10",
-    content: "",
-    icon: "📝"
-  },
-  {
-    id: "template",
-    slug: "template",
-    title: "Wiki 页面基础模板",
-    category: "开发者与贡献者",
-    lastUpdated: "2026-02-10",
-    content: "",
-    icon: "📄"
-  },
+
   {
     id: "core-resourceloading",
     slug: "core/ResourceLoading",
