@@ -1,14 +1,14 @@
 <!--
 TITLE: 附魔冲突说明
 CATEGORY: 玩家教程
-LAST_UPDATED: 2026-04-30
-PARENT: 
+LAST_UPDATED: 2026-05-04
+PARENT: enchantments_guide
 ICON: ⚔️
 -->
 
 # 附魔冲突说明
 
-这页整理了 Enchantio 的附魔冲突关系。简单说，就是有些附魔不能同时装在同一件物品上。
+有些附魔不能同时装在同一件物品上。你可以把它理解成：这些附魔走的是不同路线，硬装在一起反而会互相顶掉。
 
 <div class="page-hero-card">
 
@@ -20,353 +20,127 @@ ICON: ⚔️
 
 </div>
 
-### 目录
-- [自定义附魔冲突](#自定义附魔冲突)
-- [原版附魔冲突](#原版附魔冲突)
-- [查看建议](#查看建议)
+## 先记住一个原则
 
----
+**不是能装就一定要一起装。**
+
+很多附魔更适合“路线选择”，不是“全部叠满”。先决定你要什么风格，再去挑附魔，会比死记冲突表轻松很多。
+
+## 常见冲突怎么理解
+
+### 盾牌类
+
+盾牌附魔里很多都围绕三种方向：
+
+- 更稳
+- 更能反打
+- 更像功能辅助
+
+这些方向往往会互相冲突，因为它们在做不同的事。
+
+### 弓弩类
+
+弓弩附魔常见冲突通常来自：
+
+- 多箭
+- 单体爆发
+- 稳定输出
+- 特殊弹道
+
+一把武器通常更适合其中一种主思路。
+
+### 火焰类
+
+冰火路线通常二选一。你要的是控场还是持续灼烧，先选方向再选附魔。
+
+### 近战收割类
+
+偏补刀、偏爆发、偏持续压制的附魔经常不能混装，因为它们都在争同一个位置。
 
 ## 自定义附魔冲突
 
-<div class="conflict-card-grid">
+这里列的是当前最容易让人混淆的组合。你不用背全部，只要知道常见几组就够了。
 
-<div class="conflict-card">
+### 盾牌相关
 
-### 缓翼 ↔ 安全气囊
+- `守护`、`固握`、`稳架`、`转守`、`借势`、`回击`、`壁垒`
 
-- `enchadd:afterglide`
-- `enchadd:airbag`
+这几类大多都在强化盾牌的不同防守路线，通常不能乱叠。
 
-这两个都是鞘翅类保护思路，不能一起装。
+### 飞行相关
 
-</div>
+- `安全气囊`
+- `羽护`
+- `缓翼`
 
-<div class="conflict-card">
+都和鞘翅生存有关，但思路不同，不能全都放一起。
 
-### 安全气囊 ↔ 羽护
+### 弓弩相关
 
-- `enchadd:airbag`
-- `enchadd:wingguard`
+- `齐射`
+- `远袭`
+- `定准`
+- `静止`
+- `弹返`
+- `猎印`
 
-同样是飞行保命方向，彼此冲突。
+远程附魔常常要在“清怪”“单点”“稳定”“特殊弹道”里做选择。
 
-</div>
+### 近战相关
 
-<div class="conflict-card">
+- `处刑者`
+- `斩首`
+- `血蚀`
+- `影袭`
+- `先机`
 
-### 屏障 / 壁垒 / 借势 / 回击 / 守护
+这组更适合按你是想“补刀”“爆发”“持续输出”来分。
 
-- `enchadd:barrier`
-- `enchadd:bulwark`
-- `enchadd:parry`
-- `enchadd:riposte`
-- `enchadd:ward`
+### 火焰相关
 
-这组盾牌类附魔功能太接近，不能乱叠。
+- `焦灼`
+- `霜刃`
+- `火焰附加`
 
-</div>
-
-<div class="conflict-card">
-
-### 斩首 ↔ 处刑者
-
-- `enchadd:beheading`
-- `enchadd:executioner`
-
-都是偏击杀收益的附魔，不能共存。
-
-</div>
-
-<div class="conflict-card">
-
-### 束缚 ↔ 齐射
-
-- `enchadd:bind`
-- `enchadd:volley`
-
-一个偏控制，一个偏多箭，思路冲突。
-
-</div>
-
-<div class="conflict-card">
-
-### 稳架 ↔ 守护
-
-- `enchadd:brace`
-- `enchadd:ward`
-
-都在强化盾牌手感，但不能一起装。
-
-</div>
-
-<div class="conflict-card">
-
-### 壁垒 ↔ 转守 / 回击 / 守护
-
-- `enchadd:bulwark`
-- `enchadd:pivot`
-- `enchadd:riposte`
-- `enchadd:ward`
-
-盾牌防守路线之间会互相抢位置。
-
-</div>
-
-<div class="conflict-card">
-
-### 断首 ↔ 处刑者
-
-- `enchadd:decapitate`
-- `enchadd:executioner`
-
-都偏向收割型输出，不能同时装备。
-
-</div>
-
-<div class="conflict-card">
-
-### 闪避 ↔ 侧闪
-
-- `enchadd:evasion`
-- `enchadd:sidestep`
-
-都是提升机动和规避，效果重叠。
-
-</div>
-
-<div class="conflict-card">
-
-### 远袭 ↔ 齐射 / 多重射击
-
-- `enchadd:farshot`
-- `enchadd:volley`
-- `minecraft:multishot`
-
-远程强化路线互相冲突。
-
-</div>
-
-<div class="conflict-card">
-
-### 疾行 ↔ 稳步
-
-- `enchadd:fleetfoot`
-- `enchadd:steadfast`
-
-一个偏提速，一个偏稳重，不能同时生效。
-
-</div>
-
-<div class="conflict-card">
-
-### 坚毅 ↔ 绝境
-
-- `enchadd:fortitude`
-- `enchadd:last_stand`
-
-都属于硬扛流，位置会互相顶掉。
-
-</div>
-
-<div class="conflict-card">
-
-### 霜刃 ↔ 焦灼
-
-- `enchadd:frostbrand`
-- `enchadd:immolate`
-
-冰火路线互斥。
-
-</div>
-
-<div class="conflict-card">
-
-### 固握 ↔ 转守 / 守护
-
-- `enchadd:holdfast`
-- `enchadd:pivot`
-- `enchadd:ward`
-
-盾牌强控路线之间不能并存。
-
-</div>
-
-<div class="conflict-card">
-
-### 归途 ↔ 侧闪
-
-- `enchadd:homeward`
-- `enchadd:sidestep`
-
-都是护腿机动方向，彼此排斥。
-
-</div>
-
-<div class="conflict-card">
-
-### 先机 ↔ 影袭
-
-- `enchadd:initiative`
-- `enchadd:shadowstrike`
-
-都偏向先手爆发，不能一起用。
-
-</div>
-
-<div class="conflict-card">
-
-### 抢节奏型盾牌附魔互斥组
-
-- `enchadd:parry`
-- `enchadd:pivot`
-- `enchadd:riposte`
-- `enchadd:ward`
-
-这一组是典型的盾牌核心冲突组。
-
-</div>
-
-<div class="conflict-card">
-
-### 静止 / 定准 / 齐射
-
-- `enchadd:steady_aim`
-- `enchadd:stillness`
-- `enchadd:volley`
-
-都属于弓箭输出路线，不能一起叠。
-
-</div>
-
-<div class="conflict-card">
-
-### 潮行 ↔ 深海探索者
-
-- `enchadd:tide_runner`
-- `minecraft:depth_strider`
-
-水下移动方向会互相冲突。
-
-</div>
-
-<div class="conflict-card">
-
-### 回涡 ↔ 激流
-
-- `enchadd:undertow`
-- `minecraft:riptide`
-
-三叉戟投掷路线会互相抢效果。
-
-</div>
-
-</div>
+冰火路线不要硬叠。
 
 ## 原版附魔冲突
 
-<div class="conflict-card-grid">
+除了自定义附魔，有些也会和原版附魔冲突。比如：
 
-<div class="conflict-card">
+- 某些弓弩附魔和 `多重射击`
+- 某些近战附魔和 `锋利`
+- 某些采集附魔和 `精准采集`
 
-### 斩首 ↔ 抢夺
+如果你准备做成型装备，最好先看清楚冲突，再决定要不要保留原版附魔。
 
-- `enchadd:beheading`
-- `minecraft:looting`
+## 怎么判断该不该换掉
 
-都是击杀收益方向，不能并存。
+可以按这个顺序想：
 
-</div>
+1. 这件装备主要干什么？
+2. 我最常用的场景是什么？
+3. 哪个附魔更符合这个场景？
+4. 被冲掉的那个，是否只是“看起来很强”但其实不常用？
 
-<div class="conflict-card">
+如果答案很明确，就直接换掉冲突项。
 
-### 束缚 ↔ 冲击
+## 新手最实用的建议
 
-- `enchadd:bind`
-- `minecraft:punch`
+- 先做基础附魔，再考虑冲突优化
+- 不要为了全收而牺牲常用功能
+- 先决定路线，再决定附魔
+- 如果实在纠结，就优先保留更常用、更稳的那一个
 
-一个偏控制，一个偏击退。
+## 什么时候一定要看这页
 
-</div>
+如果你在做这些事，就别跳过：
 
-<div class="conflict-card">
-
-### 闪避 ↔ 弹射物保护
-
-- `enchadd:evasion`
-- `minecraft:projectile_protection`
-
-都是对远程攻击做防护。
-
-</div>
-
-<div class="conflict-card">
-
-### 霜刃 / 焦灼 ↔ 火焰附加
-
-- `enchadd:frostbrand`
-- `enchadd:immolate`
-- `minecraft:fire_aspect`
-
-冰火效果和原版火焰附加不能共存。
-
-</div>
-
-<div class="conflict-card">
-
-### 血蚀 ↔ 锋利 / 亡灵杀手 / 节肢杀手
-
-- `enchadd:hemorrhage`
-- `minecraft:sharpness`
-- `minecraft:smite`
-- `minecraft:bane_of_arthropods`
-
-都是近战伤害核心路线，不能叠在一起。
-
-</div>
-
-<div class="conflict-card">
-
-### 致伤 ↔ 力量
-
-- `enchadd:mortal_wound`
-- `minecraft:power`
-
-远程压制与原版弓伤害强化会互斥。
-
-</div>
-
-<div class="conflict-card">
-
-### 潮行 ↔ 深海探索者
-
-- `enchadd:tide_runner`
-- `minecraft:depth_strider`
-
-水下移动强化只能选一边。
-
-</div>
-
-<div class="conflict-card">
-
-### 回涡 ↔ 激流
-
-- `enchadd:undertow`
-- `minecraft:riptide`
-
-三叉戟玩法路线冲突。
-
-</div>
-
-</div>
-
-## 查看建议
-
-- 如果你偏 **PVP**，优先看盾牌、反击和爆发类冲突
-- 如果你偏 **生存**，优先看防具、保命和工具类冲突
-- 如果你偏 **远程**，先确认弓弩路线是否互斥
-- 如果你要混搭装备，最好先看这页再上附魔台
+- 配毕业武器
+- 做盾牌流
+- 选弓弩主输出
+- 给鞘翅加保护
+- 想把一件工具做成“最顺手”的版本
 
 ---
-
-*最后更新于: 2026-04-30*
+*最后更新：2026-05-04*
