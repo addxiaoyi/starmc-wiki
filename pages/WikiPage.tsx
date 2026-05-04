@@ -361,21 +361,21 @@ const WikiPage: React.FC = () => {
       onDrop={onDrop}
     >
       {/* 阅读进度条 */}
-      <div className="fixed top-0 left-0 w-full h-1 z-100 pointer-events-none">
+      <div className="fixed top-0 left-0 w-full h-0.5 z-100 pointer-events-none bg-transparent">
         <div 
-          className="h-full bg-indigo-500 transition-all duration-300 ease-out"
+          className="h-full bg-slate-900/70 dark:bg-white/70 transition-all duration-300 ease-out"
           style={{ width: `${readingProgress}%` }}
         />
       </div>
 
       {/* 拖拽上传覆盖层 */}
       {isDragging && (
-        <div className="fixed inset-0 z-200 flex items-center justify-center bg-blue-600/20 backdrop-blur-sm border-4 border-dashed border-blue-500 m-4 rounded-[2.5rem] pointer-events-none animate-in fade-in duration-200">
-          <div className="bg-white p-8 rounded-4xl shadow-2xl flex flex-col items-center gap-4 dark:bg-slate-900">
-            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center dark:bg-blue-900/30 dark:text-blue-400">
+        <div className="fixed inset-0 z-200 flex items-center justify-center bg-white/60 backdrop-blur-md border border-slate-200 m-4 rounded-[2.5rem] pointer-events-none animate-in fade-in duration-200 dark:bg-slate-950/60 dark:border-slate-800">
+          <div className="bg-white/90 p-8 rounded-[2rem] shadow-2xl flex flex-col items-center gap-4 border border-slate-200 dark:bg-slate-900/90 dark:border-slate-800">
+            <div className="w-16 h-16 bg-slate-100 text-slate-900 rounded-2xl flex items-center justify-center dark:bg-slate-800 dark:text-white">
               <Upload size={32} />
             </div>
-            <p className="text-xl font-black text-slate-900 dark:text-white">松开以提交新文档</p>
+            <p className="text-xl font-semibold tracking-[-0.03em] text-slate-900 dark:text-white">松开以提交新文档</p>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">文件将直接发送至管理员审核后台</p>
           </div>
         </div>
@@ -387,7 +387,7 @@ const WikiPage: React.FC = () => {
         {readingProgress > 20 && (
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="w-12 h-12 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 animate-in fade-in zoom-in duration-300"
+            className="w-12 h-12 bg-white/90 dark:bg-slate-900/90 text-slate-600 dark:text-slate-300 rounded-full shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center justify-center hover:bg-white dark:hover:bg-slate-900 transition-all active:scale-95 animate-in fade-in zoom-in duration-300 backdrop-blur-md"
           >
             <ChevronRight size={24} className="-rotate-90" />
           </button>
@@ -397,7 +397,7 @@ const WikiPage: React.FC = () => {
         {toc.length > 0 && (
           <button 
             onClick={() => setShowMobileToc(!showMobileToc)}
-            className="lg:hidden w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-all active:scale-95"
+            className="lg:hidden w-12 h-12 bg-white/90 text-slate-900 rounded-full shadow-sm border border-slate-200 flex items-center justify-center hover:bg-white transition-all active:scale-95 dark:bg-slate-900/90 dark:text-white dark:border-slate-800 backdrop-blur-md"
           >
             <List size={24} />
           </button>
@@ -408,10 +408,10 @@ const WikiPage: React.FC = () => {
       {showMobileToc && (
         <div className="fixed inset-0 z-60 lg:hidden">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowMobileToc(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[2.5rem] p-8 max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
+          <div className="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 rounded-t-[2.5rem] p-8 max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-300 border-t border-slate-200 dark:border-slate-800 backdrop-blur-xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <List size={20} className="text-indigo-500" />
+              <h3 className="text-lg font-semibold tracking-[-0.03em] text-slate-900 dark:text-white flex items-center gap-2">
+                <List size={20} className="text-slate-500" />
                 目录 / Contents
               </h3>
               <button onClick={() => setShowMobileToc(false)} className="text-slate-400 hover:text-slate-600 p-2">
@@ -453,30 +453,30 @@ const WikiPage: React.FC = () => {
           <div className="max-w-4xl">
             {/* Breadcrumbs */}
             <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-6 lg:mb-8 dark:text-slate-500 overflow-x-auto whitespace-nowrap scrollbar-none">
-              <Link to="/" className="hover:text-blue-500 transition-colors shrink-0">首页</Link>
+              <Link to="/" className="hover:text-slate-700 dark:hover:text-white transition-colors shrink-0">首页</Link>
               <ChevronRight size={12} />
               <span className="text-slate-600 dark:text-slate-300 shrink-0">{displayInfo?.category || 'Wiki'}</span>
               <ChevronRight size={12} />
-              <span className="text-blue-500 truncate">{displayInfo?.title || slug}</span>
+              <span className="text-slate-900 dark:text-white truncate">{displayInfo?.title || slug}</span>
             </nav>
 
             {/* Hero Header */}
             <header className="mb-8 lg:mb-12">
-              <div className="flex flex-wrap items-center gap-3 lg:gap-4 text-[10px] lg:text-xs font-mono text-slate-400 mb-4 dark:text-slate-500">
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 rounded-md dark:bg-slate-900 dark:text-slate-400">
+              <div className="flex flex-wrap items-center gap-3 lg:gap-4 text-[10px] lg:text-xs text-slate-400 mb-4 dark:text-slate-500">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-full dark:bg-slate-950 dark:border-slate-800">
                   <Calendar size={12} />
                   <span className="whitespace-nowrap">{displayInfo?.lastUpdated || '2026-02-10'}</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400 rounded-md">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-full dark:bg-slate-950 dark:border-slate-800">
                   <Tag size={12} />
                   <span className="whitespace-nowrap">{displayInfo?.category || '文档'}</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 text-slate-600 rounded-md dark:bg-slate-900 dark:text-slate-400">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-full dark:bg-slate-950 dark:border-slate-800">
                   <BadgeSvg />
                   <span className="text-sm font-semibold tracking-wider">{pageBadge}</span>
                 </div>
               </div>
-              <h1 className="text-3xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight dark:text-white wrap-break-word mb-4">
+              <h1 className="text-3xl lg:text-5xl font-semibold tracking-[-0.06em] leading-tight text-slate-950 dark:text-white wrap-break-word mb-4">
                 {displayInfo?.title || slug}
               </h1>
             </header>
