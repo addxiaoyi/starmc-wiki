@@ -1,3 +1,3 @@
-# Codeberg Pages workflow
+# Pages workflow
 
-This repository uses a Forgejo/Codeberg workflow to build the Vite site on push to `main` and publish the generated `dist` output to the `pages` branch.
+This repository builds the site on push to `main` and publishes the generated `dist` output to the `pages` branch.

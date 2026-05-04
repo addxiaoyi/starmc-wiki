@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Github as GithubIcon, Terminal, ChevronRight, ExternalLink as ExternalLinkIcon, Moon, Sun, Settings } from 'lucide-react';
+import { Menu, X, Search, Github as GithubIcon, Terminal, ChevronRight, ExternalLink as ExternalLinkIcon, Moon, Sun } from 'lucide-react';
 import { NAVIGATION, OFFICIAL_WEBSITE } from '../constants';
 
 const SearchModal = lazy(() => import('./SearchModal'));
@@ -10,40 +10,34 @@ export const Header: React.FC<{
   onToggleSidebar: () => void;
   isDark: boolean;
   toggleDark: (e: React.MouseEvent) => void;
-  isAdmin: boolean;
-}> = ({ onOpenSearch, onToggleSidebar, isDark, toggleDark, isAdmin }) => (
-  <header className="sticky top-0 z-100 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md dark:bg-slate-950/80 dark:border-slate-800">
-    <div className="mx-auto flex h-16 max-w-8xl items-center justify-between px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-3">
-        <button onClick={onToggleSidebar} className="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg lg:hidden dark:text-slate-300 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle Menu">
+}> = ({ onOpenSearch, onToggleSidebar, isDark, toggleDark }) => (
+  <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80">
+    <div className="mx-auto flex h-16 max-w-8xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="flex min-w-0 items-center gap-3">
+        <button onClick={onToggleSidebar} className="rounded-lg p-2 -ml-2 text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 lg:hidden" aria-label="打开目录">
           <Menu size={20} />
         </button>
-        <Link to="/" className="flex items-center gap-1.5" onMouseEnter={() => import('../pages/Home')}>
-          <div className="bg-slate-900 text-white p-1.5 rounded-lg dark:bg-white dark:text-slate-900"><Terminal size={18} /></div>
-          <span className="text-sm font-black dark:text-white whitespace-nowrap overflow-hidden">舵星归途</span>
+        <Link to="/" className="flex min-w-0 items-center gap-1.5" onMouseEnter={() => import('../pages/Home')}>
+          <div className="rounded-lg bg-slate-900 p-1.5 text-white dark:bg-white dark:text-slate-900"><Terminal size={18} /></div>
+          <span className="truncate text-sm font-black dark:text-white">舵星归途</span>
         </Link>
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        {isAdmin && (
-          <Link to="/admin/review" className="p-2 text-slate-600 bg-slate-100 rounded-lg dark:text-slate-300 dark:bg-slate-800 hover:text-blue-600 transition-colors" title="管理后台" onMouseEnter={() => import('../pages/AdminReview')}>
-            <Settings size={18} />
-          </Link>
-        )}
-        <button onClick={(e) => { e.preventDefault(); onOpenSearch(); }} className="hidden items-center gap-1.5 px-3 py-1.5 text-blue-600 bg-blue-50 border border-blue-200 rounded-full dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-700 transition-all active:scale-95">
+        <button onClick={(e) => { e.preventDefault(); onOpenSearch(); }} className="hidden items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-blue-600 transition-all active:scale-95 dark:border-blue-700 dark:bg-blue-900/40 dark:text-blue-300 sm:inline-flex">
           <Search size={14} />
-          <span className="text-xs font-black">搜索</span>
+          <span className="text-xs font-semibold">搜索</span>
         </button>
-        <button onClick={toggleDark} className="p-2 text-slate-600 bg-slate-100 rounded-lg dark:text-slate-300 dark:bg-slate-800 cursor-pointer active:scale-90 transition-all flex items-center justify-center" title="切换主题">
+        <button onClick={toggleDark} className="flex items-center justify-center rounded-lg bg-slate-100 p-2 text-slate-600 transition-all active:scale-90 dark:bg-slate-800 dark:text-slate-300" title="切换主题">
           {isDark ? <Sun size={18} className="text-yellow-500" /> : <Moon size={18} className="text-blue-600" />}
         </button>
       </div>
-      <button onClick={onOpenSearch} className="hidden lg:flex items-center gap-2 px-3 py-1.5 text-sm text-slate-400 border border-slate-200 rounded-full hover:border-slate-300 transition-colors bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:hover:border-slate-700">
+      <button onClick={onOpenSearch} className="hidden items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-400 transition-colors hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 lg:flex">
         <Search size={16} />
-        <span>搜索文档...</span>
-        <kbd className="ml-2 font-sans text-xs bg-white px-1.5 py-0.5 rounded border border-slate-200 dark:bg-slate-800 dark:border-slate-700">⌘K</kbd>
+        <span className="truncate">搜索文档...</span>
+        <kbd className="ml-2 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-sans text-xs dark:border-slate-700 dark:bg-slate-800">⌘K</kbd>
       </button>
-      <div className="hidden sm:block h-6 w-px bg-slate-200 mx-1 dark:bg-slate-800" />
-      <a href={OFFICIAL_WEBSITE} target="_blank" rel="noreferrer" className="hidden sm:flex text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors items-center gap-1.5 dark:text-slate-400 dark:hover:text-white">
+      <div className="hidden h-6 w-px bg-slate-200 sm:block dark:bg-slate-800" />
+      <a href={OFFICIAL_WEBSITE} target="_blank" rel="noreferrer" className="hidden items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white sm:flex">
         <ExternalLinkIcon size={14} />
         官网
       </a>
@@ -174,12 +168,12 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
       {isOpen && (
         <div role="button" tabIndex={0} className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm lg:hidden animate-in fade-in duration-300" onClick={onClose} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }} aria-label="关闭菜单" />
       )}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:block dark:border-slate-800 dark:bg-slate-950 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-[18rem] border-r border-slate-200 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:block dark:border-slate-800 dark:bg-slate-950 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-full overflow-y-auto px-4 py-6">
           <div className="mb-5 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">目录导航</span>
-              <button onClick={onClose} className="lg:hidden rounded-md p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"><X size={20} /></button>
+              <button onClick={onClose} className="rounded-md p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 lg:hidden"><X size={20} /></button>
             </div>
             <div className="text-xs leading-5 text-slate-500 dark:text-slate-400">点击目录展开，点击页面跳转。</div>
           </div>
@@ -193,7 +187,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
                     onClick={() => setExpandedSection((prev) => (prev === section.title ? '' : section.title))}
                     className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition-colors ${isSectionExpanded ? 'bg-white text-slate-950 shadow-sm dark:bg-slate-950 dark:text-white' : 'text-slate-700 hover:bg-white hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-950 dark:hover:text-white'}`}
                   >
-                    <span className="text-sm font-extrabold tracking-wide">{section.title}</span>
+                    <span className="text-sm font-semibold tracking-wide">{section.title}</span>
                     <ChevronRight size={16} className={`text-slate-400 transition-transform duration-200 ${isSectionExpanded ? 'rotate-90' : ''}`} />
                   </button>
                   {isSectionExpanded && (
@@ -255,47 +249,40 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   useEffect(() => {
     const timer = setTimeout(() => {
       const now = new Date().toLocaleString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      globalThis.dispatchEvent(new CustomEvent('sync-notify', { detail: `系统已同步 [${now}]` }));
+      globalThis.dispatchEvent(new CustomEvent('sync-notify', { detail: `已同步 [${now}]` }));
     }, 1000);
-    const handleSyncNotify = (e: any) => { setSyncMsg(e.detail || '同步成功'); setShowSyncNotify(true); setTimeout(() => setShowSyncNotify(false), 2700); };
+    const handleSyncNotify = (e: any) => { setSyncMsg(e.detail || '已同步'); setShowSyncNotify(true); setTimeout(() => setShowSyncNotify(false), 2700); };
     globalThis.addEventListener('sync-notify', handleSyncNotify);
     return () => { globalThis.removeEventListener('sync-notify', handleSyncNotify); clearTimeout(timer); };
   }, []);
 
-  const isAdminPage = location.pathname.toLowerCase().includes('admin');
-  const isAdmin = location.search.includes('admin=true') || localStorage.getItem('starmc_admin') === 'true';
-
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950 transition-colors duration-300">
-      {!isAdminPage && (
-        <Header onOpenSearch={() => setSearchOpen(true)} onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)} isDark={isDark} toggleDark={toggleDark} isAdmin={isAdmin} />
-      )}
+      <Header onOpenSearch={() => setSearchOpen(true)} onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)} isDark={isDark} toggleDark={toggleDark} />
       <div className="flex-1 flex flex-col lg:flex-row max-w-8xl mx-auto w-full relative">
-        {!isAdminPage && <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} onOpenSearch={() => setSearchOpen(true)} />}
-        <main className={`flex-1 min-w-0 bg-white dark:bg-slate-950 ${isAdminPage ? 'w-full px-4' : ''}`}>
-          {!isAdminPage && (
-            <div className="lg:hidden p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white/50 backdrop-blur-sm dark:bg-slate-950/50 sticky top-0 z-30">
-              <button onClick={() => setSidebarOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors dark:text-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">
-                <Menu size={18} />
-                目录导航
-              </button>
-              <button onClick={() => setSearchOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors dark:text-blue-400 dark:bg-blue-900/30 dark:hover:bg-blue-900/50">
-                <Search size={18} />
-                搜索
-              </button>
-            </div>
-          )}
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} onOpenSearch={() => setSearchOpen(true)} />
+        <main className="flex-1 min-w-0 bg-white dark:bg-slate-950">
+          <div className="sticky top-16 z-30 flex items-center justify-between gap-3 border-b border-slate-100 bg-white/70 p-4 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/70 lg:hidden">
+            <button onClick={() => setSidebarOpen(true)} className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+              <Menu size={18} />
+              目录
+            </button>
+            <button onClick={() => setSearchOpen(true)} className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
+              <Search size={18} />
+              搜索
+            </button>
+          </div>
           {children}
         </main>
       </div>
       <Suspense fallback={null}><SearchModal isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} /></Suspense>
       {showSyncNotify && (
-        <div className="fixed top-6 right-6 z-999 pointer-events-none">
-          <div className="bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-3 animate-sms-float dark:bg-slate-900/90 dark:border-slate-800">
-            <div className="bg-blue-500 p-1.5 rounded-lg text-white"><GithubIcon size={16} /></div>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold text-slate-900 dark:text-white">{syncMsg || '同步成功'}</span>
-              <span className="text-[10px] text-slate-400 font-medium">{new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).replace(/\//g, '-')}</span>
+        <div className="pointer-events-none fixed top-4 right-4 z-[999] max-w-[calc(100vw-2rem)] sm:top-6 sm:right-6 sm:max-w-sm">
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-2xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90">
+            <div className="rounded-lg bg-blue-500 p-1.5 text-white"><GithubIcon size={16} /></div>
+            <div className="min-w-0 flex flex-col">
+              <span className="truncate text-sm font-semibold text-slate-900 dark:text-white">{syncMsg || '同步成功'}</span>
+              <span className="truncate text-[10px] text-slate-400 font-medium">{new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).replace(/\//g, '-')}</span>
             </div>
           </div>
         </div>

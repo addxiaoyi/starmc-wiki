@@ -4,10 +4,8 @@ import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'reac
 import { Layout } from './components/Layout';
 import EntranceAnimation from './components/EntranceAnimation';
 
-// 路由懒加载
 const Home = lazy(() => import('./pages/Home'));
 const WikiPage = lazy(() => import('./pages/WikiPage'));
-const AdminReview = lazy(() => import('./pages/AdminReview'));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -17,7 +15,6 @@ const ScrollToTop = () => {
   return null;
 };
 
-// 简单的加载占位组件
 const PageLoader = () => (
   <div className="min-h-[60vh] flex items-center justify-center">
     <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin dark:border-slate-800 dark:border-t-white" />
@@ -33,8 +30,6 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/wiki/*" element={<WikiPage />} />
-            <Route path="/admin/review" element={<AdminReview />} />
-            <Route path="/admin" element={<Navigate to="/admin/review" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

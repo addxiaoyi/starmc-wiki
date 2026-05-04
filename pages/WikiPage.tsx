@@ -17,10 +17,8 @@ const WikiPage: React.FC = () => {
 
   const [isDragging, setIsDragging] = useState(false);
 
-  // 基础信息
   const basePageInfo = MOCK_PAGES.find(p => p.slug === slug);
 
-  // 处理文件上传
   const handleFileUpload = (file: File) => {
     if (!file.name.endsWith('.md')) {
       alert('仅支持 .md 格式的文档提交');
@@ -65,7 +63,6 @@ const WikiPage: React.FC = () => {
   const [showMobileToc, setShowMobileToc] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
 
-  // 监听滚动更新活跃目录项和阅读进度
   useEffect(() => {
     const handleScroll = () => {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -77,7 +74,6 @@ const WikiPage: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 解析 MD 中的元数据
   const parseMetadata = (text: string) => {
     const metaMatch = text.match(/<!--([\s\S]*?)-->/);
     if (!metaMatch) return { cleanContent: text, metadata: {} };
@@ -105,7 +101,6 @@ const WikiPage: React.FC = () => {
     };
   };
 
-  // 生成文章目录 (TOC)
   const toc = useMemo(() => {
     const headings = content.split('\n')
       .filter(line => line.startsWith('## ') || line.startsWith('### '))
@@ -118,13 +113,11 @@ const WikiPage: React.FC = () => {
     return headings;
   }, [content]);
 
-  // 监听滚动更新活跃目录项
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const visibleHeadings = entries.filter(entry => entry.isIntersecting);
         if (visibleHeadings.length > 0) {
-          // 获取最顶部的可见标题
           const topHeading = visibleHeadings.sort((a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top)[0];
           setActiveId(topHeading.target.id);
         }
@@ -141,7 +134,6 @@ const WikiPage: React.FC = () => {
     });
 
     return () => observer.disconnect();
-  // 依赖数组中需声明已使用的块范围变量 toc，否则 lint 会报错
   }, [toc]);
 
   useEffect(() => {
@@ -151,19 +143,16 @@ const WikiPage: React.FC = () => {
       setError(false);
       try {
         const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-        // 尝试加载 Markdown 文件
-        // 由于 slug 可能包含子目录 (如 core/ResourceLoading)，fetch 会自动处理路径
         const response = await fetch(`${baseUrl}/content/wiki/${slug}.md?v=${Date.now()}`);
-        
+
         if (!response.ok) {
-          // 如果子目录路径加载失败，尝试从根目录加载 (兼容旧路径)
           const fileName = slug.split('/').pop();
           const fallbackResponse = await fetch(`${baseUrl}/content/wiki/${fileName}.md?v=${Date.now()}`);
-          
+
           if (!fallbackResponse.ok) {
             throw new Error(`Failed to load markdown: ${response.status}`);
           }
-          
+
           const text = await fallbackResponse.text();
           const { cleanContent, metadata } = parseMetadata(text);
           setContent(cleanContent);
@@ -174,8 +163,7 @@ const WikiPage: React.FC = () => {
           setContent(cleanContent);
           setMeta(metadata);
         }
-        
-        // 重置活跃目录项
+
         setActiveId('');
       } catch (err) {
         console.error('Error fetching markdown:', err);
@@ -192,7 +180,6 @@ const WikiPage: React.FC = () => {
     fetchContent();
   }, [slug, basePageInfo]);
 
-  // 合并元数据
   const displayInfo = useMemo(() => ({
     ...basePageInfo,
     ...meta,
@@ -256,18 +243,9 @@ const WikiPage: React.FC = () => {
     }
   };
 
-  // 获取子页面 (通过 parent 字段)
   const subPages = useMemo(() => {
     return MOCK_PAGES.filter(p => p.parent === slug);
   }, [slug]);
-
-  // 管理员权限检查
-  const isAdmin = useMemo(() => {
-    return new URLSearchParams(location.search).get('admin') === 'true' || 
-           localStorage.getItem('starmc_admin') === 'true' ||
-           window.location.hostname === 'localhost' ||
-           window.location.hostname === '127.0.0.1';
-  }, [location.search]);
 
   const handleShare = async () => {
     const shareUrl = window.location.origin + location.pathname;
@@ -291,11 +269,9 @@ const WikiPage: React.FC = () => {
     }
   };
 
-  // 计算上下页导航
   const navigationLinks = useMemo(() => {
     const allItems: { title: string; path: string }[] = [];
-    
-    // 递归获取所有导航项
+
     const extractItems = (items: any[]) => {
       items.forEach(item => {
         if (item.path && item.path.startsWith('/wiki/')) {
@@ -313,7 +289,6 @@ const WikiPage: React.FC = () => {
       }
     });
 
-    // 去重并查找当前索引
     const uniqueItems = allItems.filter((item, index, self) =>
       index === self.findIndex((t) => t.path === item.path)
     );
@@ -360,7 +335,6 @@ const WikiPage: React.FC = () => {
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      {/* 阅读进度条 */}
       <div className="fixed top-0 left-0 w-full h-0.5 z-100 pointer-events-none bg-transparent">
         <div 
           className="h-full bg-slate-900/70 dark:bg-white/70 transition-all duration-300 ease-out"
@@ -368,7 +342,6 @@ const WikiPage: React.FC = () => {
         />
       </div>
 
-      {/* 拖拽上传覆盖层 */}
       {isDragging && (
         <div className="fixed inset-0 z-200 flex items-center justify-center bg-white/60 backdrop-blur-md border border-slate-200 m-4 rounded-[2.5rem] pointer-events-none animate-in fade-in duration-200 dark:bg-slate-950/60 dark:border-slate-800">
           <div className="bg-white/90 p-8 rounded-[2rem] shadow-2xl flex flex-col items-center gap-4 border border-slate-200 dark:bg-slate-900/90 dark:border-slate-800">
@@ -381,9 +354,7 @@ const WikiPage: React.FC = () => {
         </div>
       )}
       
-      {/* 悬浮操作栏 */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-        {/* 返回顶部 */}
         {readingProgress > 20 && (
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -393,7 +364,6 @@ const WikiPage: React.FC = () => {
           </button>
         )}
         
-        {/* 手机端目录悬浮按钮 */}
         {toc.length > 0 && (
           <button 
             onClick={() => setShowMobileToc(!showMobileToc)}
@@ -404,7 +374,6 @@ const WikiPage: React.FC = () => {
         )}
       </div>
 
-      {/* 手机端目录抽屉 */}
       {showMobileToc && (
         <div className="fixed inset-0 z-60 lg:hidden">
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowMobileToc(false)} />
@@ -448,10 +417,8 @@ const WikiPage: React.FC = () => {
       )}
       
       <div className="flex flex-col lg:flex-row gap-12 items-start">
-        {/* Main Content Area */}
         <div className="flex-1 min-w-0 w-full">
           <div className="max-w-4xl">
-            {/* Breadcrumbs */}
             <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-6 lg:mb-8 dark:text-slate-500 overflow-x-auto whitespace-nowrap scrollbar-none">
               <Link to="/" className="hover:text-slate-700 dark:hover:text-white transition-colors shrink-0">首页</Link>
               <ChevronRight size={12} />
@@ -460,7 +427,6 @@ const WikiPage: React.FC = () => {
               <span className="text-slate-900 dark:text-white truncate">{displayInfo?.title || slug}</span>
             </nav>
 
-            {/* Hero Header */}
             <header className="mb-8 lg:mb-12">
               <div className="flex flex-wrap items-center gap-3 lg:gap-4 text-[10px] lg:text-xs text-slate-400 mb-4 dark:text-slate-500">
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-full dark:bg-slate-950 dark:border-slate-800">
@@ -481,12 +447,10 @@ const WikiPage: React.FC = () => {
               </h1>
             </header>
 
-            {/* Content Rendering */}
             <div className="relative">
               <MarkdownRenderer content={content} />
             </div>
 
-            {/* Related Pages */}
             {subPages.length > 0 && (
               <div className="mt-16 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
                 <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2 dark:text-white">
@@ -510,7 +474,6 @@ const WikiPage: React.FC = () => {
               </div>
             )}
 
-            {/* Footer Navigation */}
             <footer className="mt-16 lg:mt-20 pt-8 border-t border-slate-100 dark:border-slate-800">
               {(navigationLinks.prev || navigationLinks.next) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
@@ -650,7 +613,6 @@ const WikiPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Sidebar TOC - Desktop */}
         {toc.length > 0 && (
           <aside className="hidden lg:block w-64 sticky top-24 shrink-0">
             <div className="pl-6 border-l border-slate-100 dark:border-slate-800">
