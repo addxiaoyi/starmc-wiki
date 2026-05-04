@@ -115,7 +115,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
     if (level >= MAX_DEPTH) return null;
 
     return (
-      <ul className={`${level > 0 ? 'ml-3 mt-1 border-l border-slate-200 pl-3 dark:border-slate-800' : 'space-y-0.5'}`}>
+      <ul className={`${level > 0 ? 'ml-3 mt-2 border-l border-slate-200 pl-3 dark:border-slate-800' : 'space-y-1'}`}>
         {items.map((item) => {
           const isActive = location.pathname === item.path;
           const hasChildren = !!item.items?.length;
@@ -138,7 +138,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
                 <button
                   type="button"
                   onClick={handleToggle}
-                  className={`group flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors ${isExpanded || isAncestorActive ? 'font-semibold text-slate-900 dark:text-slate-100' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100'}`}
+                  className={`group flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${isExpanded || isAncestorActive ? 'bg-white font-semibold text-slate-950 shadow-sm dark:bg-slate-950 dark:text-white' : 'font-medium text-slate-700 hover:bg-white hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-950 dark:hover:text-white'}`}
                 >
                   <span className="flex items-center gap-2 leading-5">
                     {item.icon && <span className="text-base opacity-80">{item.icon}</span>}
@@ -151,7 +151,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
                   to={item.path}
                   onClick={() => globalThis.innerWidth < 1024 && onClose()}
                   onMouseEnter={() => { if (item.path.startsWith('/wiki/')) import('../pages/WikiPage'); }}
-                  className={`block rounded-md px-3 py-2 text-sm leading-5 transition-colors ${isActive ? 'bg-slate-100 font-semibold text-slate-950 dark:bg-slate-900 dark:text-white' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100'}`}
+                  className={`block rounded-lg px-3 py-2.5 text-sm leading-5 transition-colors ${isActive ? 'bg-white font-semibold text-slate-950 shadow-sm dark:bg-slate-950 dark:text-white' : 'font-medium text-slate-700 hover:bg-white hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-950 dark:hover:text-white'}`}
                 >
                   <span className="flex items-center gap-2">
                     {item.icon && <span className="text-base opacity-80">{item.icon}</span>}
@@ -183,19 +183,24 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
             </div>
             <div className="text-xs leading-5 text-slate-500 dark:text-slate-400">点击目录展开，点击页面跳转。</div>
           </div>
-          <nav className="space-y-4">
+          <nav className="space-y-5">
             {NAVIGATION.map((section) => {
               const isSectionExpanded = expandedSection === section.title;
               return (
-                <div key={section.title}>
+                <div key={section.title} className="rounded-xl border border-slate-200 bg-slate-50/80 px-2 py-2 dark:border-slate-800 dark:bg-slate-900/30">
                   <button
                     type="button"
                     onClick={() => setExpandedSection((prev) => (prev === section.title ? '' : section.title))}
-                    className={`mb-1 w-full rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide transition-colors ${isSectionExpanded ? 'bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100'}`}
+                    className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition-colors ${isSectionExpanded ? 'bg-white text-slate-950 shadow-sm dark:bg-slate-950 dark:text-white' : 'text-slate-700 hover:bg-white hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-950 dark:hover:text-white'}`}
                   >
-                    {section.title}
+                    <span className="text-sm font-extrabold tracking-wide">{section.title}</span>
+                    <ChevronRight size={16} className={`text-slate-400 transition-transform duration-200 ${isSectionExpanded ? 'rotate-90' : ''}`} />
                   </button>
-                  {isSectionExpanded && renderNavItems(section.items as NavNode[])}
+                  {isSectionExpanded && (
+                    <div className="mt-2">
+                      {renderNavItems(section.items as NavNode[])}
+                    </div>
+                  )}
                 </div>
               );
             })}
