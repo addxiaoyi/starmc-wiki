@@ -161,6 +161,14 @@ export const NAVIGATION: NavItem[] = [
         ]
       }
     ]
+  },
+  {
+    title: "开发者与贡献者",
+    items: [
+      { title: "贡献指南", path: "/wiki/contributing" },
+      { title: "贡献者名单", path: "/wiki/contributors" },
+      { title: "基础模板", path: "/wiki/template" },
+    ]
   }
 ];
 
