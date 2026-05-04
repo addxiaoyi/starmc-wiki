@@ -206,6 +206,56 @@ const WikiPage: React.FC = () => {
     return source.slice(0, 1).toUpperCase();
   }, [displayInfo, slug]);
 
+  const badgeTone = useMemo(() => {
+    const category = displayInfo?.category || '';
+    if (category.includes('附魔')) return 'cyan';
+    if (category.includes('新手') || category.includes('入门')) return 'slate';
+    if (category.includes('生存') || category.includes('玩法')) return 'emerald';
+    if (category.includes('社区') || category.includes('社交')) return 'indigo';
+    return 'blue';
+  }, [displayInfo]);
+
+  const BadgeSvg = () => {
+    const common = 'fill-none stroke-current stroke-[1.7]';
+    switch (badgeTone) {
+      case 'cyan':
+        return (
+          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+            <path className={common} d="M12 2l4 7h-8l4-7Z" />
+            <path className={common} d="M5 10h14l-2 10H7L5 10Z" />
+          </svg>
+        );
+      case 'emerald':
+        return (
+          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+            <path className={common} d="M4 15c2-6 6-9 8-9s6 3 8 9" />
+            <path className={common} d="M6 15h12v5H6z" />
+          </svg>
+        );
+      case 'indigo':
+        return (
+          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+            <circle className={common} cx="12" cy="12" r="8" />
+            <path className={common} d="M8 12h8M12 8v8" />
+          </svg>
+        );
+      case 'slate':
+        return (
+          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+            <rect className={common} x="5" y="4" width="14" height="16" rx="2" />
+            <path className={common} d="M8 8h8M8 12h8M8 16h5" />
+          </svg>
+        );
+      default:
+        return (
+          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+            <path className={common} d="M4 7h16v10H4z" />
+            <path className={common} d="M8 7V4h8v3" />
+          </svg>
+        );
+    }
+  };
+
   // 获取子页面 (通过 parent 字段)
   const subPages = useMemo(() => {
     return MOCK_PAGES.filter(p => p.parent === slug);
@@ -422,7 +472,8 @@ const WikiPage: React.FC = () => {
                   <span className="whitespace-nowrap">{displayInfo?.category || '文档'}</span>
                 </div>
                 <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 text-slate-600 rounded-md dark:bg-slate-900 dark:text-slate-400">
-                  <span className="text-base lg:text-lg">{pageBadge}</span>
+                  <BadgeSvg />
+                  <span className="text-sm font-semibold tracking-wider">{pageBadge}</span>
                 </div>
               </div>
               <h1 className="text-3xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight dark:text-white wrap-break-word mb-4">
