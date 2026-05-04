@@ -115,8 +115,8 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
     if (level >= MAX_DEPTH) return null;
 
     return (
-      <ul className={`space-y-1 overflow-hidden ${level > 0 ? 'ml-4 mt-2 border-l border-slate-100 pl-3 dark:border-slate-800' : ''}`}>
-        {items.map((item, index) => {
+      <ul className={`${level > 0 ? 'ml-3 mt-1 border-l border-slate-200 pl-3 dark:border-slate-800' : 'space-y-0.5'}`}>
+        {items.map((item) => {
           const isActive = location.pathname === item.path;
           const hasChildren = !!item.items?.length;
           const key = item.path || item.title;
@@ -133,39 +133,33 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
           };
 
           return (
-            <li
-              key={key}
-              className={`transform-gpu origin-top transition-all duration-500 ease-out ${isExpanded || isActive ? 'opacity-100 translate-y-0 scale-100' : level > 0 ? 'opacity-95 translate-y-0 scale-100' : 'opacity-100 translate-y-0 scale-100'}`}
-              style={{ transitionDelay: `${Math.min(level * 22 + index * 10, 220)}ms` }}
-            >
+            <li key={key}>
               {hasChildren ? (
                 <button
                   type="button"
                   onClick={handleToggle}
-                  className={`group w-full flex items-center justify-between px-4 py-3.5 text-base font-bold rounded-2xl transition-all duration-200 border will-change-transform relative overflow-hidden ${isExpanded ? 'bg-slate-50 text-slate-900 border-slate-200 dark:bg-slate-900 dark:text-white dark:border-slate-700' : isAncestorActive ? 'bg-indigo-50 text-slate-900 border-indigo-100 dark:bg-indigo-950/40 dark:text-white dark:border-indigo-900/40' : 'text-slate-700 border-transparent hover:bg-slate-50 hover:text-slate-900 hover:border-slate-200 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white dark:hover:border-slate-700'}`}
+                  className={`group flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors ${isExpanded || isAncestorActive ? 'font-semibold text-slate-900 dark:text-slate-100' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100'}`}
                 >
-                  {isExpanded && <span className="absolute left-0 top-0 h-full w-1 bg-indigo-500 dark:bg-indigo-400" />}
-                  <div className="flex items-center gap-3">
-                    {item.icon && <span className="text-lg">{item.icon}</span>}
-                    <span className="text-left leading-tight">{item.title}</span>
-                  </div>
-                  <ChevronRight size={16} className={`text-slate-400 transition-all duration-300 ease-out ${isExpanded ? 'rotate-90 scale-110 translate-x-0.5 animate-pulse' : 'rotate-0 scale-100 group-hover:translate-x-0.5'}`} />
+                  <span className="flex items-center gap-2 leading-5">
+                    {item.icon && <span className="text-base opacity-80">{item.icon}</span>}
+                    {item.title}
+                  </span>
+                  <ChevronRight size={14} className={`shrink-0 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-90' : 'group-hover:translate-x-0.5'}`} />
                 </button>
               ) : item.path ? (
                 <Link
                   to={item.path}
                   onClick={() => globalThis.innerWidth < 1024 && onClose()}
                   onMouseEnter={() => { if (item.path.startsWith('/wiki/')) import('../pages/WikiPage'); }}
-                  className={`flex items-center justify-between px-4 py-3 text-base font-semibold rounded-2xl transition-all duration-200 border will-change-transform ${isActive ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-sm dark:bg-slate-800 dark:text-white dark:border-slate-700' : 'text-slate-700 border-transparent hover:bg-slate-50 hover:text-slate-900 hover:border-slate-200 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white dark:hover:border-slate-700'}`}
+                  className={`block rounded-md px-3 py-2 text-sm leading-5 transition-colors ${isActive ? 'bg-slate-100 font-semibold text-slate-950 dark:bg-slate-900 dark:text-white' : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100'}`}
                 >
-                  <div className="flex items-center gap-3">
-                    {item.icon && <span>{item.icon}</span>}
-                    <span className="leading-tight">{item.title}</span>
-                  </div>
-                  {isActive && <ChevronRight size={16} className="text-slate-400" />}
+                  <span className="flex items-center gap-2">
+                    {item.icon && <span className="text-base opacity-80">{item.icon}</span>}
+                    {item.title}
+                  </span>
                 </Link>
               ) : (
-                <div className="px-4 py-3 text-base font-black text-slate-400 uppercase tracking-[0.22em] dark:text-slate-500">{item.title}</div>
+                <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{item.title}</div>
               )}
               {hasChildren && isExpanded && renderNavItems(item.items as NavNode[], level + 1)}
             </li>
@@ -180,45 +174,28 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
       {isOpen && (
         <div role="button" tabIndex={0} className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm lg:hidden animate-in fade-in duration-300" onClick={onClose} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }} aria-label="关闭菜单" />
       )}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:block dark:bg-slate-950 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="h-full overflow-y-auto px-3 py-8 relative">
-          <div className="pointer-events-none absolute left-[24px] top-8 bottom-8 w-px bg-gradient-to-b from-indigo-300 via-slate-200 to-transparent opacity-70 dark:from-indigo-800 dark:via-slate-700" />
-          <div className="pointer-events-none absolute left-[24px] top-8 h-16 w-px bg-gradient-to-b from-indigo-400 to-transparent animate-pulse opacity-60 dark:from-indigo-500" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white via-white/80 to-transparent dark:from-slate-950 dark:via-slate-950/80" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white via-white/85 to-transparent dark:from-slate-950 dark:via-slate-950/85" />
-          <div className="flex flex-col gap-4 mb-6 px-1">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:block dark:border-slate-800 dark:bg-slate-950 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="h-full overflow-y-auto px-4 py-6">
+          <div className="mb-5 flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.25em] dark:text-slate-500">菜单导航</span>
-              <button onClick={onClose} className="lg:hidden dark:text-white p-2 -mr-2 text-slate-500 hover:bg-slate-100 rounded-xl dark:hover:bg-slate-800"><X size={24} /></button>
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">目录导航</span>
+              <button onClick={onClose} className="lg:hidden rounded-md p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"><X size={20} /></button>
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400">点击父目录展开，点击子页面跳转。</div>
+            <div className="text-xs leading-5 text-slate-500 dark:text-slate-400">点击目录展开，点击页面跳转。</div>
           </div>
-          <nav className="space-y-2 relative">
-            <div className="pointer-events-none absolute left-[13px] top-0 bottom-0 w-px bg-gradient-to-b from-indigo-200 via-slate-200 to-transparent dark:from-indigo-900 dark:via-slate-800" />
-            {NAVIGATION.map((section, sectionIndex) => {
+          <nav className="space-y-4">
+            {NAVIGATION.map((section) => {
               const isSectionExpanded = expandedSection === section.title;
               return (
-                <div key={section.title} className="space-y-2">
+                <div key={section.title}>
                   <button
                     type="button"
                     onClick={() => setExpandedSection((prev) => (prev === section.title ? '' : section.title))}
-                    className={`group w-full px-3 py-3 text-left text-sm font-black uppercase tracking-[0.24em] transition-all duration-300 rounded-2xl border relative overflow-hidden ${isSectionExpanded ? 'text-slate-800 bg-slate-50 border-slate-200 shadow-sm dark:text-slate-100 dark:bg-slate-900 dark:border-slate-700' : 'text-slate-600 border-transparent hover:text-slate-800 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-900'}`}
-                    style={{ animationDelay: `${sectionIndex * 45}ms` }}
+                    className={`mb-1 w-full rounded-md px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide transition-colors ${isSectionExpanded ? 'bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100'}`}
                   >
-                    {isSectionExpanded && <span className="absolute left-0 top-0 h-full w-1 bg-indigo-500 dark:bg-indigo-400" />}
-                    <span className="inline-flex items-center gap-2">
-                      <span className={`h-2 w-2 rounded-full bg-indigo-400 transition-all duration-300 ${isSectionExpanded ? 'scale-125 shadow-[0_0_0_4px_rgba(99,102,241,0.12)]' : 'group-hover:scale-110'}`} />
-                      {section.title}
-                    </span>
+                    {section.title}
                   </button>
-                  {isSectionExpanded && (
-                    <div className="animate-[fade-slide_420ms_cubic-bezier(0.22,1,0.36,1)_both]">
-                      <div className="relative pl-4">
-                        <div className="pointer-events-none absolute left-[5px] top-1 bottom-1 w-px bg-gradient-to-b from-indigo-300 via-slate-200 to-transparent opacity-70 dark:from-indigo-800 dark:via-slate-700 animate-rail-pulse" />
-                        {renderNavItems(section.items as NavNode[])}
-                      </div>
-                    </div>
-                  )}
+                  {isSectionExpanded && renderNavItems(section.items as NavNode[])}
                 </div>
               );
             })}
@@ -318,7 +295,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </div>
         </div>
       )}
-      <style>{`@keyframes sms-float {0% { opacity: 0; transform: translateY(-12px); } 12% { opacity: 1; transform: translateY(0); } 88% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-8px); }} .animate-sms-float { animation: sms-float 2.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; } @keyframes fade-slide {0% { opacity: 0; transform: translateY(-8px) scaleY(0.98); } 100% { opacity: 1; transform: translateY(0) scaleY(1); } } @keyframes rail-pulse {0%,100% { opacity: .45; transform: scaleY(1); } 50% { opacity: .8; transform: scaleY(1.03); } } .animate-rail-pulse { animation: rail-pulse 2.8s ease-in-out infinite; }`}</style>
+      <style>{`@keyframes sms-float {0% { opacity: 0; transform: translateY(-12px); } 12% { opacity: 1; transform: translateY(0); } 88% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-8px); }} .animate-sms-float { animation: sms-float 2.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }`}</style>
     </div>
   );
 };
