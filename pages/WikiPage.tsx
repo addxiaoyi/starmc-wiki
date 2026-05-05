@@ -62,6 +62,10 @@ const WikiPage: React.FC = () => {
   const [activeId, setActiveId] = useState<string>('');
   const [showMobileToc, setShowMobileToc] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
+  const isAdmin = useMemo(() => {
+    const search = new URLSearchParams(location.search);
+    return search.get('admin') === 'true' || localStorage.getItem('starmc_admin') === 'true';
+  }, [location.search]);
 
   useEffect(() => {
     const handleScroll = () => {
