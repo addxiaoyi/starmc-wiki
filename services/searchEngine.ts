@@ -4,12 +4,21 @@ import { DOCS } from '../docs';
 type Posting = { doc: number; tf: number };
 type Index = Map<string, Posting[]>;
 
-const docs = MOCK_PAGES.map(p => {
+type DocRecord = {
+  slug: string;
+  title: string;
+  content: string;
+  plainText: string;
+};
+
+const docs: DocRecord[] = MOCK_PAGES.map(p => {
   const doc = DOCS.find(d => d.slug === p.slug);
+  const content = doc ? doc.content : '';
   return {
     slug: p.slug,
     title: p.title,
-    content: doc ? doc.content : ""
+    content,
+    plainText: `${p.title}\n${content}`,
   };
 });
 const N = docs.length;
@@ -22,7 +31,10 @@ const tokenize = (text: string) => {
   const bigrams = chars
     .map((_, i, arr) => arr.slice(i, i + 2).join(''))
     .filter(s => s.length === 2);
-  return [...words, ...cn, ...bigrams];
+  const trigrams = chars
+    .map((_, i, arr) => arr.slice(i, i + 3).join(''))
+    .filter(s => s.length === 3);
+  return [...words, ...cn, ...bigrams, ...trigrams];
 };
 
 const buildIndex = (): { index: Index; df: Map<string, number>; len: number[] } => {
@@ -54,34 +66,62 @@ const bm25 = (tf: number, dlen: number, k1 = 1.2, b = 0.75) => {
   return tf * (k1 + 1) / Math.max(1e-9, denom);
 };
 
-const highlight = (content: string, terms: string[]) => {
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, s => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+}[s] as string));
+
+const uniqueTerms = (terms: string[]) => [...new Set(terms.map(t => t.trim().toLowerCase()).filter(Boolean))];
+
+const highlight = (content: string, query: string) => {
+  const cleanTerms = uniqueTerms(tokenize(query));
   const lower = content.toLowerCase();
-  let pos = -1;
-  for (const t of terms) {
-    pos = lower.indexOf(t);
-    if (pos >= 0) break;
+
+  let bestPos = -1;
+  let bestLen = 0;
+  for (const term of cleanTerms) {
+    const pos = lower.indexOf(term);
+    if (pos >= 0 && (bestPos < 0 || term.length > bestLen || (term.length === bestLen && pos < bestPos))) {
+      bestPos = pos;
+      bestLen = term.length;
+    }
   }
-  const start = Math.max(0, pos >= 0 ? pos - 60 : 0);
-  const end = Math.min(content.length, pos >= 0 ? pos + 120 : 180);
+
+  const start = Math.max(0, bestPos >= 0 ? bestPos - 60 : 0);
+  const end = Math.min(content.length, bestPos >= 0 ? bestPos + Math.max(120, bestLen + 80) : 180);
   const snippet = content.slice(start, end);
-  const escaped = snippet.replace(/[&<>]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[s] as string));
-  const marked = terms.reduce((acc, t) => acc.replace(new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark>${m}</mark>`), escaped);
-  return marked;
+  let html = escapeHtml(snippet);
+
+  for (const term of [...cleanTerms].sort((a, b) => b.length - a.length)) {
+    html = html.replace(new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark>${m}</mark>`);
+  }
+
+  return html;
 };
 
 export type SearchResult = { slug: string; title: string; score: number; snippet: string };
 
 export const search = (query: string, page = 1, pageSize = 20): { results: SearchResult[]; total: number } => {
   const normalized = query.trim().toLowerCase();
-  const terms = tokenize(normalized);
+  const terms = uniqueTerms(tokenize(normalized));
   if (normalized.length === 0) return { results: [], total: 0 };
 
   const scores: Map<number, number> = new Map();
 
   for (let i = 0; i < docs.length; i++) {
-    const haystack = `${docs[i].title}\n${docs[i].content}`.toLowerCase();
+    const haystack = docs[i].plainText.toLowerCase();
     if (haystack.includes(normalized)) {
-      scores.set(i, (scores.get(i) ?? 0) + 1000);
+      scores.set(i, (scores.get(i) ?? 0) + 1000 + normalized.length * 8);
+    }
+
+    for (const term of terms) {
+      if (term.length < 2) continue;
+      if (haystack.includes(term)) {
+        scores.set(i, (scores.get(i) ?? 0) + 25 + term.length * 3);
+      }
     }
   }
 
@@ -99,7 +139,7 @@ export const search = (query: string, page = 1, pageSize = 20): { results: Searc
     .sort((a, b) => b[1] - a[1])
     .map(([i, score]) => {
       const d = docs[i];
-      return { slug: d.slug, title: d.title, score, snippet: highlight(d.content, terms.length ? terms : [normalized]) };
+      return { slug: d.slug, title: d.title, score, snippet: highlight(d.content || d.title, normalized) };
     });
 
   const total = ranked.length;
