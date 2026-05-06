@@ -17,8 +17,12 @@ const N = docs.length;
 const tokenize = (text: string) => {
   const lower = text.toLowerCase();
   const words = lower.match(/[a-z0-9]+/g) ?? [];
-  const cn = Array.from(lower.replace(/[\s\p{P}\p{S}]/gu, '')).map((_, i, arr) => arr.slice(i, i + 2).join('')).filter(s => s.length === 2);
-  return [...words, ...cn];
+  const chars = Array.from(lower.replace(/[\s\p{P}\p{S}]/gu, ''));
+  const cn = chars.filter(ch => /[\u4e00-\u9fff]/.test(ch));
+  const bigrams = chars
+    .map((_, i, arr) => arr.slice(i, i + 2).join(''))
+    .filter(s => s.length === 2);
+  return [...words, ...cn, ...bigrams];
 };
 
 const buildIndex = (): { index: Index; df: Map<string, number>; len: number[] } => {
@@ -57,8 +61,8 @@ const highlight = (content: string, terms: string[]) => {
     pos = lower.indexOf(t);
     if (pos >= 0) break;
   }
-  const start = Math.max(0, pos - 60);
-  const end = Math.min(content.length, (pos >= 0 ? pos + 120 : 120));
+  const start = Math.max(0, pos >= 0 ? pos - 60 : 0);
+  const end = Math.min(content.length, pos >= 0 ? pos + 120 : 180);
   const snippet = content.slice(start, end);
   const escaped = snippet.replace(/[&<>]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[s] as string));
   const marked = terms.reduce((acc, t) => acc.replace(new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark>${m}</mark>`), escaped);
@@ -68,9 +72,19 @@ const highlight = (content: string, terms: string[]) => {
 export type SearchResult = { slug: string; title: string; score: number; snippet: string };
 
 export const search = (query: string, page = 1, pageSize = 20): { results: SearchResult[]; total: number } => {
-  const terms = tokenize(query);
-  if (terms.length === 0) return { results: [], total: 0 };
+  const normalized = query.trim().toLowerCase();
+  const terms = tokenize(normalized);
+  if (normalized.length === 0) return { results: [], total: 0 };
+
   const scores: Map<number, number> = new Map();
+
+  for (let i = 0; i < docs.length; i++) {
+    const haystack = `${docs[i].title}\n${docs[i].content}`.toLowerCase();
+    if (haystack.includes(normalized)) {
+      scores.set(i, (scores.get(i) ?? 0) + 1000);
+    }
+  }
+
   for (const t of terms) {
     const postings = index.get(t);
     if (!postings) continue;
@@ -80,12 +94,14 @@ export const search = (query: string, page = 1, pageSize = 20): { results: Searc
       scores.set(doc, (scores.get(doc) ?? 0) + s);
     }
   }
+
   const ranked = [...scores.entries()]
     .sort((a, b) => b[1] - a[1])
     .map(([i, score]) => {
       const d = docs[i];
-      return { slug: d.slug, title: d.title, score, snippet: highlight(d.content, terms) };
+      return { slug: d.slug, title: d.title, score, snippet: highlight(d.content, terms.length ? terms : [normalized]) };
     });
+
   const total = ranked.length;
   const start = (page - 1) * pageSize;
   const results = ranked.slice(start, start + pageSize);
