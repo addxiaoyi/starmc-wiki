@@ -1,21 +1,10 @@
-<!--
-TITLE: 附魔新手入门
-CATEGORY: 核心系统
-LAST_UPDATED: 2026-05-04
-PARENT: enchantments_guide
--->
-
 # 附魔新手入门
 
 如果你刚开始接触服务器附魔，不用急着把所有表格背下来。先理解“怎么开始”“先做什么”“哪些最实用”，就已经能少踩很多坑。
 
-<div class="page-hero-card">
-
 **先记住一句话**
 
 先做能稳定用上的附魔，再考虑稀有或高阶搭配。
-
-</div>
 
 ## 新手最推荐的思路
 
@@ -66,6 +55,7 @@ PARENT: enchantments_guide
 ## 新手优先级建议
 
 ### 如果你主要在生存
+
 优先考虑：
 
 - 工具效率
@@ -74,6 +64,7 @@ PARENT: enchantments_guide
 - 基本机动性
 
 ### 如果你主要在战斗
+
 优先考虑：
 
 - 直接增伤
@@ -82,6 +73,7 @@ PARENT: enchantments_guide
 - 远程压制
 
 ### 如果你主要在养成
+
 优先考虑：
 
 - 更容易积累材料的附魔
@@ -122,4 +114,5 @@ PARENT: enchantments_guide
 这样比一上来就钻表格轻松得多。
 
 ---
+
 *最后更新：2026-05-04*

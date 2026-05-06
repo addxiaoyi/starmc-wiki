@@ -1,15 +1,10 @@
-<!--
-TITLE: 附魔指令与查找
-CATEGORY: 核心系统
-LAST_UPDATED: 2026-04-30
-PARENT: enchantments_guide
--->
+
 
 # 附魔指令与查找
 
 这页整理和附魔相关的玩家可用指令。
 
-<div class="page-hero-card">
+
 
 **快速看点**
 
@@ -17,13 +12,14 @@ PARENT: enchantments_guide
 - 适合临时确认某本附魔是什么
 - 不用翻完整页面也能找到目标
 
-</div>
+
 
 ### 快速目录
-- [`/enchadd list`](#enchadd-list)
-- [`/enchadd info <key>`](#enchadd-info-key)
-- [`/enchadd find <名称>`](#enchadd-find-名称)
-- [别名 `/enchants`](#别名-enchants)
+
+- `[/enchadd list](#enchadd-list)`
+- `[/enchadd info <key>](#enchadd-info-key)`
+- `[/enchadd find <名称>](#enchadd-find-名称)`
+- [别名 `/enchants](#别名-enchants)`
 
 ---
 

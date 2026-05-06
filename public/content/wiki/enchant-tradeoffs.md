@@ -1,15 +1,9 @@
-<!--
-TITLE: 冲突取舍建议
-CATEGORY: 核心系统
-LAST_UPDATED: 2026-05-04
-PARENT: enchantments_guide
--->
 
 # 冲突取舍建议
 
 这页不是单纯列冲突，而是告诉你“冲突了以后该怎么选”。
 
-<div class="page-hero-card">
+
 
 **快速看点**
 
@@ -17,7 +11,7 @@ PARENT: enchantments_guide
 - 更适合成型配装，而不是单纯记表
 - 先选路线，再选附魔
 
-</div>
+
 
 ## 先想路线，再谈取舍
 
@@ -177,4 +171,5 @@ PARENT: enchantments_guide
 - [附魔玩法分类](./enchant-playstyles)
 
 ---
+
 *最后更新：2026-05-04*
