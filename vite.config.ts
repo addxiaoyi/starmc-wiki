@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-export default defineConfig({
-  base: '/starmc-wiki-page/',
+export default defineConfig(({ mode }) => ({
+  base: mode === 'pages' ? '/starmc-wiki-page/' : '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     dedupe: ['react', 'react-dom'],
@@ -31,4 +31,4 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 600,
   },
-});
+}));
