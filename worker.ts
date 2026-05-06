@@ -2,40 +2,43 @@ export interface Env {
   ASSETS: Fetcher;
 }
 
-const ASSET_BASE = '/starmc-wiki-page/';
+const ASSET_BASE = '/starmc-wiki-page';
 
-const toAssetRequest = (request: Request, pathname: string) => {
+const toAssetPath = (pathname: string) => {
+  if (pathname.startsWith(ASSET_BASE)) {
+    const stripped = pathname.slice(ASSET_BASE.length) || '/';
+    return stripped.startsWith('/') ? stripped : `/${stripped}`;
+  }
+
+  return pathname.startsWith('/') ? pathname : `/${pathname}`;
+};
+
+const isFileRequest = (pathname: string) => /\.[a-zA-Z0-9]+$/.test(pathname);
+
+const fetchAsset = (request: Request, env: Env, pathname: string) => {
   const assetUrl = new URL(request.url);
   assetUrl.pathname = pathname;
-  return new Request(assetUrl.toString(), request);
+  return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
 };
-
-const normalizePath = (pathname: string) => {
-  if (pathname.startsWith(ASSET_BASE)) {
-    return pathname.slice(ASSET_BASE.length - 1) || '/';
-  }
-  return pathname;
-};
-
-const isProbablyAsset = (pathname: string) => /\.[a-zA-Z0-9]+$/.test(pathname);
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    const pathname = normalizePath(url.pathname);
+    const pathname = url.pathname;
+    const assetPath = toAssetPath(pathname);
 
-    if (isProbablyAsset(pathname)) {
-      const response = await env.ASSETS.fetch(toAssetRequest(request, pathname));
-      if (response.status !== 404) {
-        return response;
+    if (isFileRequest(pathname)) {
+      const directAsset = await fetchAsset(request, env, assetPath);
+      if (directAsset.status !== 404) {
+        return directAsset;
       }
     }
 
-    const assetResponse = await env.ASSETS.fetch(toAssetRequest(request, pathname));
-    if (assetResponse.status !== 404) {
-      return assetResponse;
+    const pageAsset = await fetchAsset(request, env, assetPath);
+    if (pageAsset.status !== 404) {
+      return pageAsset;
     }
 
-    return env.ASSETS.fetch(toAssetRequest(request, '/index.html'));
+    return fetchAsset(request, env, '/index.html');
   },
 };
