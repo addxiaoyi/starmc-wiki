@@ -90,8 +90,9 @@ const highlight = (content: string, query: string) => {
     }
   }
 
-  const start = Math.max(0, bestPos >= 0 ? bestPos - 60 : 0);
-  const end = Math.min(content.length, bestPos >= 0 ? bestPos + Math.max(120, bestLen + 80) : 180);
+  const anchor = bestPos >= 0 ? bestPos : 0;
+  const start = Math.max(0, anchor - 120);
+  const end = Math.min(content.length, anchor + Math.max(240, bestLen + 180));
   const snippet = content.slice(start, end);
   let html = escapeHtml(snippet);
 
@@ -118,9 +119,9 @@ export const search = (query: string, page = 1, pageSize = 20): { results: Searc
     }
 
     for (const term of terms) {
-      if (term.length < 2) continue;
       if (haystack.includes(term)) {
-        scores.set(i, (scores.get(i) ?? 0) + 25 + term.length * 3);
+        const bonus = term.length === 1 ? 6 : term.length * 4;
+        scores.set(i, (scores.get(i) ?? 0) + 18 + bonus);
       }
     }
   }
