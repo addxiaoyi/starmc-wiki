@@ -1,8 +1,8 @@
 export type DocPage = { slug: string; title: string; content: string };
-const files = import.meta.glob('/docs/**/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const files = import.meta.glob('/public/content/wiki/**/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 
 const toSlug = (path: string) => {
-  const m = path.match(/\/docs\/(.+?)\.md$/);
+  const m = path.match(/\/public\/content\/wiki\/(.+?)\.md$/);
   return m ? m[1] : path;
 };
 
