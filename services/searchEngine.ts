@@ -103,7 +103,7 @@ const highlight = (content: string, query: string) => {
   return html;
 };
 
-export type SearchResult = { slug: string; title: string; score: number; snippet: string };
+export type SearchResult = { slug: string; title: string; score: number; snippet: string; hitCount: number };
 
 export const search = (query: string, page = 1, pageSize = 20): { results: SearchResult[]; total: number } => {
   const normalized = query.trim().toLowerCase();
@@ -112,18 +112,26 @@ export const search = (query: string, page = 1, pageSize = 20): { results: Searc
 
   const scores: Map<number, number> = new Map();
 
+  const hitCounts: Map<number, number> = new Map();
+
   for (let i = 0; i < docs.length; i++) {
     const haystack = docs[i].plainText.toLowerCase();
+    let hits = 0;
+
     if (haystack.includes(normalized)) {
       scores.set(i, (scores.get(i) ?? 0) + 1000 + normalized.length * 8);
+      hits += 1;
     }
 
     for (const term of terms) {
       if (haystack.includes(term)) {
         const bonus = term.length === 1 ? 6 : term.length * 4;
         scores.set(i, (scores.get(i) ?? 0) + 18 + bonus);
+        hits += 1;
       }
     }
+
+    if (hits > 0) hitCounts.set(i, hits);
   }
 
   for (const t of terms) {
