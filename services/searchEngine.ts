@@ -145,10 +145,14 @@ export const search = (query: string, page = 1, pageSize = 20): { results: Searc
   }
 
   const ranked = [...scores.entries()]
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => {
+      const hitDiff = (hitCounts.get(b[0]) ?? 0) - (hitCounts.get(a[0]) ?? 0);
+      if (hitDiff !== 0) return hitDiff;
+      return b[1] - a[1];
+    })
     .map(([i, score]) => {
       const d = docs[i];
-      return { slug: d.slug, title: d.title, score, snippet: highlight(d.content || d.title, normalized) };
+      return { slug: d.slug, title: d.title, score, snippet: highlight(d.content || d.title, normalized), hitCount: hitCounts.get(i) ?? 0 };
     });
 
   const total = ranked.length;

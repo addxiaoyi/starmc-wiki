@@ -67,13 +67,20 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
               <ul className="space-y-2 sm:space-y-3">
                 {results.map(r => (
                   <li key={r.slug} className="p-2.5 sm:p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors dark:border-slate-800 dark:hover:bg-slate-800">
-                    <Link 
-                      to={`/wiki/${r.slug}`} 
-                      onClick={onClose}
-                      className="font-black text-sm sm:text-base text-slate-900 dark:text-white block mb-1"
-                    >
-                      {r.title}
-                    </Link>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <Link 
+                        to={`/wiki/${r.slug}`} 
+                        onClick={onClose}
+                        className="font-black text-sm sm:text-base text-slate-900 dark:text-white block min-w-0"
+                      >
+                        {r.title}
+                      </Link>
+                      {r.hitCount > 0 && (
+                        <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                          {r.hitCount} 命中
+                        </span>
+                      )}
+                    </div>
                     <div className="text-[11px] sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2" dangerouslySetInnerHTML={{ __html: r.snippet }} />
                   </li>
                 ))}
