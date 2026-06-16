@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Info, AlertTriangle, AlertCircle, CheckCircle, ZoomIn, X } from 'lucide-react';
 
 interface MarkdownRendererProps {
@@ -6,7 +6,56 @@ interface MarkdownRendererProps {
   currentPath?: string;
 }
 
-export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, currentPath = '' }) => {
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, s => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+}[s] as string));
+
+const processInlineMarkdown = (text: string) => {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+    .replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 bg-slate-100 text-indigo-600 rounded-md font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
+    .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
+      let finalUrl = url;
+      if (url.startsWith('#')) {
+        finalUrl = url;
+      } else if (url.startsWith('./')) {
+        const cleanUrl = url.replace('./', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
+        finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
+      } else if (url.startsWith('/wiki/')) {
+        const cleanUrl = url.replace('/wiki/', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
+        finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
+      }
+      return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
+    });
+};
+
+const processListInlineMarkdown = (text: string) => {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.*?)`/g, '<code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
+    .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
+      let finalUrl = url;
+      if (url.startsWith('#')) {
+        finalUrl = url;
+      } else if (url.startsWith('./')) {
+        const cleanUrl = url.replace('./', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
+        finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
+      } else if (url.startsWith('/wiki/')) {
+        const cleanUrl = url.replace('/wiki/', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
+        finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
+      }
+      return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
+    });
+};
+
+const makeAnchorId = (text: string) => text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+
+const MarkdownRendererBase: React.FC<MarkdownRendererProps> = ({ content, currentPath = '' }) => {
   const handleAnchorClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement | null;
     const anchor = target?.closest('a') as HTMLAnchorElement | null;
@@ -36,50 +85,49 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cur
     };
   }, [zoomImage]);
 
-  const lines = content.split('\n');
-  let inList = false;
-  let inTable = false;
-  let tableRows: string[][] = [];
-  let inCodeBlock = false;
-  let codeContent: string[] = [];
-  let codeLang = '';
-  let inAdmonition = false;
-  let admonitionType = '';
-  let admonitionTitle = '';
-  let admonitionContent: string[] = [];
+  const elements = useMemo(() => {
+    const lines = content.split('\n');
+    const elements: React.ReactNode[] = [];
+    let inList = false;
+    let inTable = false;
+    let tableRows: string[][] = [];
+    let inCodeBlock = false;
+    let codeContent: string[] = [];
+    let codeLang = '';
+    let inAdmonition = false;
+    let admonitionType = '';
+    let admonitionTitle = '';
+    let admonitionContent: string[] = [];
+    let skippedFirstH1 = false;
 
-  const renderAdmonition = (type: string, title: string, contentLines: string[], key: any) => {
-    const config = {
-      tip: { icon: CheckCircle, color: 'text-emerald-600', bg: 'bg-emerald-50/50', border: 'border-emerald-200', darkBg: 'dark:bg-emerald-950/20', darkBorder: 'dark:border-emerald-900/50', darkText: 'dark:text-emerald-400' },
-      info: { icon: Info, color: 'text-blue-600', bg: 'bg-blue-50/50', border: 'border-blue-200', darkBg: 'dark:bg-blue-950/20', darkBorder: 'dark:border-blue-900/50', darkText: 'dark:text-blue-400' },
-      warning: { icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50/50', border: 'border-amber-200', darkBg: 'dark:bg-amber-950/20', darkBorder: 'dark:border-amber-900/50', darkText: 'dark:text-amber-400' },
-      danger: { icon: AlertCircle, color: 'text-rose-600', bg: 'bg-rose-50/50', border: 'border-rose-200', darkBg: 'dark:bg-rose-950/20', darkBorder: 'dark:border-rose-900/50', darkText: 'dark:text-rose-400' },
-    }[type as keyof typeof config] || { icon: Info, color: 'text-slate-600', bg: 'bg-slate-50/50', border: 'border-slate-200', darkBg: 'dark:bg-slate-900/50', darkBorder: 'dark:border-slate-800', darkText: 'dark:text-slate-400' };
+    const renderAdmonition = (type: string, title: string, contentLines: string[], key: any) => {
+      const config = {
+        tip: { icon: CheckCircle, color: 'text-emerald-600', bg: 'bg-emerald-50/50', border: 'border-emerald-200', darkBg: 'dark:bg-emerald-950/20', darkBorder: 'dark:border-emerald-900/50', darkText: 'dark:text-emerald-400' },
+        info: { icon: Info, color: 'text-blue-600', bg: 'bg-blue-50/50', border: 'border-blue-200', darkBg: 'dark:bg-blue-950/20', darkBorder: 'dark:border-blue-900/50', darkText: 'dark:text-blue-400' },
+        warning: { icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50/50', border: 'border-amber-200', darkBg: 'dark:bg-amber-950/20', darkBorder: 'dark:border-amber-900/50', darkText: 'dark:text-amber-400' },
+        danger: { icon: AlertCircle, color: 'text-rose-600', bg: 'bg-rose-50/50', border: 'border-rose-200', darkBg: 'dark:bg-rose-950/20', darkBorder: 'dark:border-rose-900/50', darkText: 'dark:text-rose-400' },
+      }[type as keyof typeof config] || { icon: Info, color: 'text-slate-600', bg: 'bg-slate-50/50', border: 'border-slate-200', darkBg: 'dark:bg-slate-900/50', darkBorder: 'dark:border-slate-800', darkText: 'dark:text-slate-400' };
 
-    const Icon = config.icon;
+      const Icon = config.icon;
 
-    return (
-      <div key={key} className={`my-8 border-l-4 ${config.border} ${config.bg} ${config.darkBorder} ${config.darkBg} rounded-r-xl overflow-hidden`}>
-        <div className={`px-4 py-2 border-b ${config.border} ${config.darkBorder} flex items-center gap-2 font-bold ${config.color} ${config.darkText} text-sm uppercase tracking-wider`}>
-          <Icon size={18} />
-          {title || type.toUpperCase()}
+      return (
+        <div key={key} className={`my-8 border-l-4 ${config.border} ${config.bg} ${config.darkBorder} ${config.darkBg} rounded-r-xl overflow-hidden`}>
+          <div className={`px-4 py-2 border-b ${config.border} ${config.darkBorder} flex items-center gap-2 font-bold ${config.color} ${config.darkText} text-sm uppercase tracking-wider`}>
+            <Icon size={18} />
+            {title || type.toUpperCase()}
+          </div>
+          <div className="px-4 py-3 text-slate-600 dark:text-slate-400 leading-relaxed prose-sm">
+            {contentLines.map((l, i) => (
+              <p key={i} className={i === contentLines.length - 1 ? 'mb-0' : 'mb-2'}>
+                {l}
+              </p>
+            ))}
+          </div>
         </div>
-        <div className="px-4 py-3 text-slate-600 dark:text-slate-400 leading-relaxed prose-sm">
-          {contentLines.map((l, i) => (
-            <p key={i} className={i === contentLines.length - 1 ? 'mb-0' : 'mb-2'}>
-              {l}
-            </p>
-          ))}
-        </div>
-      </div>
-    );
-  };
+      );
+    };
 
-  const elements: React.ReactNode[] = [];
-  let skippedFirstH1 = false;
-  const makeAnchorId = (text: string) => text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
-
-  for (let i = 0; i < lines.length; i++) {
+    for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmedLine = line.trim();
 
@@ -182,22 +230,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cur
     }
 
     if (line.startsWith('- ') || line.startsWith('* ')) {
-      const formatted = line.slice(2)
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/`(.*?)`/g, '<code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
-        .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
-          let finalUrl = url;
-          if (url.startsWith('#')) {
-            finalUrl = url;
-          } else if (url.startsWith('./')) {
-            const cleanUrl = url.replace('./', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
-            finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
-          } else if (url.startsWith('/wiki/')) {
-            const cleanUrl = url.replace('/wiki/', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
-            finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
-          }
-          return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
-        });
+      const formatted = processListInlineMarkdown(line.slice(2));
       elements.push(
         <div key={i} className="flex gap-3 mb-3 ml-4">
           <span className="text-indigo-400 select-none dark:text-indigo-600 font-black mt-1">•</span>
@@ -267,27 +300,14 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cur
     }
 
     if (line.trim().length > 0) {
-      const processedLine = line
-        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
-        .replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 bg-slate-100 text-indigo-600 rounded-md font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
-        .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
-          let finalUrl = url;
-          if (url.startsWith('#')) {
-            finalUrl = url;
-          } else if (url.startsWith('./')) {
-            const cleanUrl = url.replace('./', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
-            finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
-          } else if (url.startsWith('/wiki/')) {
-            const cleanUrl = url.replace('/wiki/', '').replace(/\.md$/i, '').replace(/\/index$/i, '');
-            finalUrl = `/starmc-wiki-page/#/wiki/${cleanUrl}`;
-          }
-          return `<a href="${finalUrl}" class="text-indigo-600 hover:text-indigo-800 underline underline-offset-4 decoration-indigo-200 transition-all font-medium dark:text-indigo-400 dark:hover:text-indigo-300 dark:decoration-indigo-900">${text}</a>`;
-        });
+      const processedLine = processInlineMarkdown(line);
 
       elements.push(<p key={i} className="text-slate-700 leading-relaxed mb-6 dark:text-slate-300 text-lg" dangerouslySetInnerHTML={{ __html: processedLine }} />);
     }
   }
+
+    return elements;
+  }, [content]);
 
   return (
     <div className="prose prose-slate max-w-none" onClick={handleAnchorClick}>
@@ -303,3 +323,5 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cur
     </div>
   );
 };
+
+export const MarkdownRenderer = React.memo(MarkdownRendererBase);

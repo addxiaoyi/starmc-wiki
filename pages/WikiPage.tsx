@@ -1,10 +1,53 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, Navigate, Link, useLocation } from 'react-router-dom';
 import { ExternalLink as ExternalLinkIcon, Calendar, Tag, ChevronRight, ArrowLeft, Share2, Edit3, Loader2, Download, Layers, List, History, Upload } from 'lucide-react';
 import { MOCK_PAGES, NAVIGATION } from '../constants';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { WikiPage as WikiPageType } from '../types';
+
+const BadgeSvgBase: React.FC<{ tone: string }> = ({ tone }) => {
+  const common = 'fill-none stroke-current stroke-[1.7]';
+  switch (tone) {
+    case 'cyan':
+      return (
+        <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+          <path className={common} d="M12 2l4 7h-8l4-7Z" />
+          <path className={common} d="M5 10h14l-2 10H7L5 10Z" />
+        </svg>
+      );
+    case 'emerald':
+      return (
+        <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+          <path className={common} d="M4 15c2-6 6-9 8-9s6 3 8 9" />
+          <path className={common} d="M6 15h12v5H6z" />
+        </svg>
+      );
+    case 'indigo':
+      return (
+        <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+          <circle className={common} cx="12" cy="12" r="8" />
+          <path className={common} d="M8 12h8M12 8v8" />
+        </svg>
+      );
+    case 'slate':
+      return (
+        <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+          <rect className={common} x="5" y="4" width="14" height="16" rx="2" />
+          <path className={common} d="M8 8h8M8 12h8M8 16h5" />
+        </svg>
+      );
+    default:
+      return (
+        <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
+          <path className={common} d="M4 7h16v10H4z" />
+          <path className={common} d="M8 7V4h8v3" />
+        </svg>
+      );
+  }
+};
+
+const BadgeSvg = React.memo(BadgeSvgBase);
 
 const WikiPage: React.FC = () => {
   const { "*": slug } = useParams();
@@ -68,13 +111,20 @@ const WikiPage: React.FC = () => {
   }, [location.search]);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (window.scrollY / totalHeight) * 100;
-      setReadingProgress(progress);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = (window.scrollY / totalHeight) * 100;
+          setReadingProgress(progress);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -117,8 +167,14 @@ const WikiPage: React.FC = () => {
     return headings;
   }, [content]);
 
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver(
       (entries) => {
         const visibleHeadings = entries.filter(entry => entry.isIntersecting);
         if (visibleHeadings.length > 0) {
@@ -134,10 +190,14 @@ const WikiPage: React.FC = () => {
 
     toc.forEach((item) => {
       const element = document.getElementById(item.id);
-      if (element) observer.observe(element);
+      if (element) observerRef.current!.observe(element);
     });
 
-    return () => observer.disconnect();
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
   }, [toc]);
 
   useEffect(() => {
@@ -205,47 +265,6 @@ const WikiPage: React.FC = () => {
     if (category.includes('社区') || category.includes('社交')) return 'indigo';
     return 'blue';
   }, [displayInfo]);
-
-  const BadgeSvg = () => {
-    const common = 'fill-none stroke-current stroke-[1.7]';
-    switch (badgeTone) {
-      case 'cyan':
-        return (
-          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
-            <path className={common} d="M12 2l4 7h-8l4-7Z" />
-            <path className={common} d="M5 10h14l-2 10H7L5 10Z" />
-          </svg>
-        );
-      case 'emerald':
-        return (
-          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
-            <path className={common} d="M4 15c2-6 6-9 8-9s6 3 8 9" />
-            <path className={common} d="M6 15h12v5H6z" />
-          </svg>
-        );
-      case 'indigo':
-        return (
-          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
-            <circle className={common} cx="12" cy="12" r="8" />
-            <path className={common} d="M8 12h8M12 8v8" />
-          </svg>
-        );
-      case 'slate':
-        return (
-          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
-            <rect className={common} x="5" y="4" width="14" height="16" rx="2" />
-            <path className={common} d="M8 8h8M8 12h8M8 16h5" />
-          </svg>
-        );
-      default:
-        return (
-          <svg viewBox="0 0 24 24" className="h-4 w-4 lg:h-5 lg:w-5" aria-hidden="true">
-            <path className={common} d="M4 7h16v10H4z" />
-            <path className={common} d="M8 7V4h8v3" />
-          </svg>
-        );
-    }
-  };
 
   const subPages = useMemo(() => {
     return MOCK_PAGES.filter(p => p.parent === slug);
@@ -442,7 +461,7 @@ const WikiPage: React.FC = () => {
                   <span className="whitespace-nowrap">{displayInfo?.category || '文档'}</span>
                 </div>
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-full dark:bg-slate-950 dark:border-slate-800">
-                  <BadgeSvg />
+                  <BadgeSvg tone={badgeTone} />
                   <span className="text-sm font-semibold tracking-wider">{pageBadge}</span>
                 </div>
               </div>

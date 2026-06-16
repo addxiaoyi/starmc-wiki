@@ -96,8 +96,17 @@ const highlight = (content: string, query: string) => {
   const snippet = content.slice(start, end);
   let html = escapeHtml(snippet);
 
-  for (const term of [...cleanTerms].sort((a, b) => b.length - a.length)) {
-    html = html.replace(new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark>${m}</mark>`);
+  // Deduplicate terms: remove any term that is a substring of a longer one
+  const sortedTerms = [...cleanTerms].sort((a, b) => b.length - a.length);
+  const dedupedTerms = sortedTerms.filter(
+    (t, _idx, arr) => !arr.some((u) => u !== t && u.includes(t))
+  );
+
+  for (const term of dedupedTerms) {
+    html = html.replace(
+      new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'),
+      (m) => `<mark>${m}</mark>`
+    );
   }
 
   return html;

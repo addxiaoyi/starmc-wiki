@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Copy, Terminal, Globe, Zap, Check, ArrowUpRight, BookOpen, Wrench, History, Compass } from 'lucide-react';
 import { SERVER_NAME, SERVER_IPS, OFFICIAL_WEBSITE } from '../constants';
@@ -14,16 +14,11 @@ const Home: React.FC = () => {
     setTheme(themes[Math.floor(Math.random() * themes.length)]);
   }, []);
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(text);
     setTimeout(() => setCopied(null), 2000);
-  };
-
-  const sectionTone =
-    theme === 'blueprint' ? 'text-slate-900 dark:text-white' :
-    theme === 'aura' ? 'text-slate-900 dark:text-white' :
-    'text-slate-900 dark:text-white';
+  }, []);
 
   return (
     <div className={`min-h-screen transition-colors duration-700 ${theme === 'blueprint' ? 'bg-slate-50 dark:bg-slate-950' : theme === 'aura' ? 'bg-white dark:bg-slate-950' : 'bg-stone-50 dark:bg-slate-950'}`}>
@@ -76,7 +71,7 @@ const Home: React.FC = () => {
                 </div>
                 <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
               </div>
-              <h3 className={`mb-2 text-2xl font-semibold tracking-[-0.04em] sm:text-[1.85rem] md:text-3xl ${sectionTone}`}>
+              <h3 className={`mb-2 text-2xl font-semibold tracking-[-0.04em] sm:text-[1.85rem] md:text-3xl text-slate-900 dark:text-white`}>
                 {item.title}
               </h3>
               <p className="max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400 md:text-base">
