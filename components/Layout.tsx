@@ -2,12 +2,6 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAVIGATION, OFFICIAL_WEBSITE } from '../constants';
 
-const IconShell = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <span className={className} aria-hidden="true">
-    {children}
-  </span>
-);
-
 const MenuIcon = ({ size = 20, className = '' }: { size?: number; className?: string }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
     <path d="M4 6.5h16" />
@@ -83,15 +77,15 @@ export const Header: React.FC<{
         </button>
         <Link to="/" className="flex min-w-0 items-center gap-1.5" onMouseEnter={() => import('../pages/Home')}>
           <div className="rounded-xl bg-slate-900 p-1.5 text-white ring-1 ring-slate-200/60 dark:bg-white dark:text-slate-900 dark:ring-slate-800"><WikiMark size={18} /></div>
-          <span className="truncate text-sm font-black dark:text-white">舵星归途</span>
+          <span className="truncate text-sm font-bold dark:text-white">舵星归途</span>
         </Link>
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <button onClick={(e) => { e.preventDefault(); onOpenSearch(); }} className="hidden items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-blue-600 transition-all active:scale-95 dark:border-blue-700 dark:bg-blue-900/40 dark:text-blue-300 sm:inline-flex">
+        <button onClick={(e) => { e.preventDefault(); onOpenSearch(); }} className="hidden items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-blue-600 transition-colors dark:border-blue-700 dark:bg-blue-900/40 dark:text-blue-300 sm:inline-flex">
           <SearchIcon size={14} />
           <span className="text-xs font-semibold">搜索</span>
         </button>
-        <button onClick={toggleDark} className="flex items-center justify-center rounded-lg bg-slate-100 p-2 text-slate-600 transition-all active:scale-90 dark:bg-slate-800 dark:text-slate-300" title="切换主题">
+        <button onClick={toggleDark} className="flex items-center justify-center rounded-lg bg-slate-100 p-2 text-slate-600 transition-colors dark:bg-slate-800 dark:text-slate-300" title="切换主题">
           {isDark ? <SunIcon size={18} className="text-yellow-500" /> : <MoonIcon size={18} className="text-blue-600" />}
         </button>
       </div>
@@ -234,7 +228,7 @@ export const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void; onOpenSea
   return (
     <>
       {isOpen && (
-        <div role="button" tabIndex={0} className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm lg:hidden animate-in fade-in duration-300" onClick={onClose} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }} aria-label="关闭菜单" />
+        <div role="button" tabIndex={0} className="fixed inset-0 z-40 bg-slate-900/20 lg:hidden" onClick={onClose} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }} aria-label="关闭菜单" />
       )}
       <aside className={`fixed inset-y-0 left-0 z-50 w-[18rem] border-r border-slate-200 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:block dark:border-slate-800 dark:bg-slate-950 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-full overflow-y-auto px-4 py-6 text-base">
@@ -303,11 +297,92 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const toggleDark = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setIsDark(!isDark); };
 
+  // 键盘快捷键
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setSearchOpen(true); } if (e.key === 'Escape') setSearchOpen(false); };
+    const isInputFocused = () => {
+      const active = document.activeElement;
+      if (!active) return false;
+      const tag = active.tagName.toLowerCase();
+      return tag === 'input' || tag === 'textarea' || tag === 'select' || (active as HTMLElement).isContentEditable;
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 如果在输入框中，不处理大部分快捷键
+      if (isInputFocused()) {
+        if (e.key === 'Escape') {
+          (document.activeElement as HTMLElement)?.blur();
+        }
+        return;
+      }
+
+      // ⌘K / Ctrl+K: 打开搜索
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+        return;
+      }
+
+      // /: 打开搜索 (类似 Reddit/Help Center)
+      if (e.key === '/') {
+        e.preventDefault();
+        setSearchOpen(true);
+        return;
+      }
+
+      // Esc: 关闭弹窗
+      if (e.key === 'Escape') {
+        if (isSearchOpen) {
+          setSearchOpen(false);
+        } else if (isSidebarOpen) {
+          setSidebarOpen(false);
+        }
+        return;
+      }
+
+      // g + H: 回首页
+      if (e.key === 'g') {
+        window._gk = 'g';
+        setTimeout(() => { window._gk = undefined; }, 1000);
+        return;
+      }
+      if (e.key === 'h' && window._gk === 'g') {
+        e.preventDefault();
+        window.location.href = '/';
+        return;
+      }
+
+      // g + T: 回顶部
+      if (e.key === 'g') {
+        window._gk = 'g';
+        setTimeout(() => { window._gk = undefined; }, 1000);
+        return;
+      }
+      if (e.key === 't' && window._gk === 'g') {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // [: 上一页
+      if (e.key === '[') {
+        e.preventDefault();
+        const prevLink = document.querySelector('a[rel="prev"], [data-nav="prev"]') as HTMLAnchorElement;
+        if (prevLink) prevLink.click();
+        return;
+      }
+
+      // ]: 下一页
+      if (e.key === ']') {
+        e.preventDefault();
+        const nextLink = document.querySelector('a[rel="next"], [data-nav="next"]') as HTMLAnchorElement;
+        if (nextLink) nextLink.click();
+        return;
+      }
+    };
+
     globalThis.addEventListener('keydown', handleKeyDown);
     return () => globalThis.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isSearchOpen, isSidebarOpen]);
 
   useEffect(() => {
     document.body.style.overflow = isSearchOpen ? 'hidden' : 'unset';
@@ -330,7 +405,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       <div className="flex-1 flex flex-col lg:flex-row max-w-8xl mx-auto w-full relative">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} onOpenSearch={() => setSearchOpen(true)} />
         <main className="flex-1 min-w-0 bg-white dark:bg-slate-950">
-          <div className="sticky top-16 z-30 flex items-center justify-between gap-3 border-b border-slate-100 bg-white/70 p-4 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/70 lg:hidden">
+          <div className="sticky top-16 z-30 flex items-center justify-between gap-3 border-b border-slate-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-950 lg:hidden">
             <button onClick={() => setSidebarOpen(true)} className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
               <MenuIcon size={18} />
               目录
@@ -346,7 +421,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       <Suspense fallback={null}><SearchModal isOpen={isSearchOpen} onClose={() => setSearchOpen(false)} /></Suspense>
       {showSyncNotify && (
         <div className="pointer-events-none fixed top-4 right-4 z-[999] max-w-[calc(100vw-2rem)] sm:top-6 sm:right-6 sm:max-w-sm">
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-2xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90">
+          <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-lg dark:border-slate-800 dark:bg-slate-900">
             <div className="rounded-lg bg-blue-500 p-1.5 text-white"><ExternalIcon size={16} /></div>
             <div className="min-w-0 flex flex-col">
               <span className="truncate text-sm font-semibold text-slate-900 dark:text-white">{syncMsg || '同步成功'}</span>

@@ -7,50 +7,27 @@ interface EntranceAnimationProps {
 }
 
 const EntranceAnimation: React.FC<EntranceAnimationProps> = ({ onComplete }) => {
-  const [stage, setStage] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    // Stage 0: Initial hidden
-    // Stage 1: Icon & Text fade in
-    // Stage 2: Background slide/fade out
-    const timers = [
-      setTimeout(() => setStage(1), 100),
-      setTimeout(() => setStage(2), 1800),
-      setTimeout(() => onComplete(), 2400),
-    ];
-    return () => timers.forEach(t => clearTimeout(t));
+    const timer = setTimeout(() => {
+      setVisible(false);
+      setTimeout(onComplete, 300);
+    }, 800);
+    return () => clearTimeout(timer);
   }, [onComplete]);
 
-  return (
-    <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-white dark:bg-slate-950 transition-all duration-700 ease-in-out ${stage === 2 ? 'opacity-0 invisible scale-110' : 'opacity-100 visible'}`}>
-      <div className="relative flex flex-col items-center">
-        {/* Animated Background Pulse */}
-        <div className={`absolute inset-0 -m-12 bg-slate-50 dark:bg-slate-900/50 rounded-full blur-3xl transition-all duration-1000 ease-out ${stage >= 1 ? 'scale-150 opacity-100' : 'scale-50 opacity-0'}`} />
-        
-        <div className={`relative flex flex-col items-center transition-all duration-1000 ease-out ${stage === 1 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-          <div className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 p-4 rounded-3xl shadow-2xl mb-6 transform rotate-12 hover:rotate-0 transition-transform duration-500">
-            <Terminal size={40} strokeWidth={1.5} />
-          </div>
-          
-          <h1 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white overflow-hidden">
-            <span className="inline-block animate-reveal">STAR MC</span>
-          </h1>
-          <div className="h-0.5 w-12 bg-slate-200 dark:bg-slate-800 mt-4 rounded-full overflow-hidden">
-            <div className={`h-full bg-slate-900 dark:bg-white transition-all duration-[1500ms] ease-in-out ${stage >= 1 ? 'w-full' : 'w-0'}`} />
-          </div>
-          <p className="mt-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] ml-1">舵星归途</p>
-        </div>
-      </div>
+  if (!visible) return null;
 
-      <style>{`
-        @keyframes reveal {
-          from { transform: translateY(100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-reveal {
-          animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}</style>
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white dark:bg-slate-950 transition-opacity duration-300">
+      <div className="flex flex-col items-center">
+        <div className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 p-4 rounded-xl mb-4">
+          <Terminal size={32} strokeWidth={1.5} />
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">STAR MC</h1>
+        <p className="mt-2 text-xs text-slate-400 dark:text-slate-500 uppercase tracking-widest">舵星归途</p>
+      </div>
     </div>
   );
 };

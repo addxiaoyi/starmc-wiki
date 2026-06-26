@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Info, AlertTriangle, AlertCircle, CheckCircle, ZoomIn, X } from 'lucide-react';
+import { MOCK_PAGES } from '../constants';
 
 interface MarkdownRendererProps {
   content: string;
@@ -14,8 +15,25 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, s => ({
   "'": '&#39;'
 }[s] as string));
 
+// Wiki 双向链接转换 [[PageName]] 或 [[PageName|Display]]
+const processWikiLinks = (text: string): string => {
+  // 匹配 [[页面名]] 或 [[页面名|显示文本]]
+  return text.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (match, pageName, displayText) => {
+    const display = displayText || pageName;
+    const slug = pageName.trim().toLowerCase().replace(/\s+/g, '-');
+
+    // 检查页面是否存在
+    const exists = MOCK_PAGES.some(p => p.slug === slug);
+
+    if (exists) {
+      return `<a href="/wiki/${slug}" class="wiki-link ${exists ? 'wiki-link-exists' : 'wiki-link-missing'}">${display}</a>`;
+    }
+    return `<a href="/wiki/${slug}" class="wiki-link wiki-link-missing" title="页面不存在">${display}</a>`;
+  });
+};
+
 const processInlineMarkdown = (text: string) => {
-  return text
+  return processWikiLinks(text)
     .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
     .replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 bg-slate-100 text-indigo-600 rounded-md font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
@@ -35,7 +53,7 @@ const processInlineMarkdown = (text: string) => {
 };
 
 const processListInlineMarkdown = (text: string) => {
-  return text
+  return processWikiLinks(text)
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/`(.*?)`/g, '<code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-600 font-mono text-sm dark:bg-slate-800 dark:text-indigo-400">$1</code>')
     .replace(/\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
@@ -313,13 +331,24 @@ const MarkdownRendererBase: React.FC<MarkdownRendererProps> = ({ content, curren
     <div className="prose prose-slate max-w-none" onClick={handleAnchorClick}>
       {elements}
       {zoomImage && (
-        <div className="fixed inset-0 z-100 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300" onClick={() => setZoomImage(null)}>
+        <div className="fixed inset-0 z-100 bg-slate-950/90 flex items-center justify-center p-4 md:p-12" onClick={() => setZoomImage(null)}>
           <button className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
             <X size={32} />
           </button>
-          <img src={zoomImage} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300" alt="Zoomed" />
+          <img src={zoomImage} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" alt="Zoomed" />
         </div>
       )}
+      <style>{`
+        .wiki-link { color: #6366f1; text-decoration: underline; text-decoration-style: dashed; text-underline-offset: 4px; transition: all 0.2s; }
+        .wiki-link:hover { color: #4f46e5; text-decoration-style: solid; }
+        .wiki-link-exists { }
+        .wiki-link-missing { color: #94a3b8; text-decoration-style: dotted; opacity: 0.7; }
+        .wiki-link-missing:hover { color: #f87171; }
+        .dark .wiki-link { color: #818cf8; }
+        .dark .wiki-link:hover { color: #a5b4fc; }
+        .dark .wiki-link-missing { color: #64748b; }
+        .dark .wiki-link-missing:hover { color: #fca5a5; }
+      `}</style>
     </div>
   );
 };

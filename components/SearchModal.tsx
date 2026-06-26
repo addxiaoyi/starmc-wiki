@@ -36,12 +36,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[110] flex items-start justify-center pt-2 sm:pt-20 px-2 sm:px-4 bg-slate-900/60 backdrop-blur-sm dark:bg-black/80"
+      className="fixed inset-0 z-[110] flex items-start justify-center pt-2 sm:pt-20 px-2 sm:px-4 bg-slate-900/60 dark:bg-black/80"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 dark:bg-slate-900 dark:border dark:border-slate-800 flex flex-col max-h-[85vh] sm:max-h-[70vh]" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-xl overflow-hidden dark:bg-slate-900 dark:border dark:border-slate-800 flex flex-col max-h-[85vh] sm:max-h-[70vh]" onClick={e => e.stopPropagation()}>
         <div className="p-3 sm:p-4 border-b border-slate-100 flex items-center gap-3 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
           <Search className="text-slate-400 flex-shrink-0" size={18} />
           <input 
@@ -73,11 +73,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                       className="block p-2.5 sm:p-3"
                     >
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <span className="font-black text-sm sm:text-base text-slate-900 dark:text-white block min-w-0">
+                        <span className="font-bold text-sm sm:text-base text-slate-900 dark:text-white block min-w-0">
                           {r.title}
                         </span>
                         {r.hitCount > 0 && (
-                          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                             {r.hitCount} 命中
                           </span>
                         )}
@@ -91,19 +91,19 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                 )}
               </ul>
               <div className="mt-4 sm:mt-6 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
-                <div className="text-[9px] sm:text-xs text-slate-500 uppercase tracking-widest font-black">共 {total} 条</div>
+                <div className="text-[9px] sm:text-xs text-slate-500 uppercase tracking-widest font-bold">共 {total} 条</div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <button 
                     disabled={page <= 1}
                     onClick={() => setPage(p => Math.max(1, p - 1))}
-                    className="px-2.5 py-1.5 text-[9px] sm:text-xs font-black rounded-lg border border-slate-200 disabled:opacity-30 dark:border-slate-800 dark:text-slate-400 transition-all active:scale-95"
+                    className="px-2.5 py-1.5 text-[9px] sm:text-xs font-bold rounded-lg border border-slate-200 disabled:opacity-30 dark:border-slate-800 dark:text-slate-400 transition-colors"
                   >
                     上一页
                   </button>
                   <button 
                     disabled={page * pageSize >= total}
                     onClick={() => setPage(p => p + 1)}
-                    className="px-2.5 py-1.5 text-[9px] sm:text-xs font-black rounded-lg border border-slate-200 disabled:opacity-30 dark:border-slate-800 dark:text-slate-400 transition-all active:scale-95"
+                    className="px-2.5 py-1.5 text-[9px] sm:text-xs font-bold rounded-lg border border-slate-200 disabled:opacity-30 dark:border-slate-800 dark:text-slate-400 transition-colors"
                   >
                     下一页
                   </button>

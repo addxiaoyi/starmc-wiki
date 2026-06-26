@@ -19,8 +19,34 @@ export interface NavItem {
 }
 
 export interface SearchResult {
+  slug: string;
   title: string;
+  score: number;
   snippet: string;
-  path: string;
-  relevance: number;
+  hitCount: number;
+}
+
+// WikiPage 页面元数据（从 Markdown 注释解析）
+export interface PageMetadata {
+  title?: string;
+  category?: string;
+  lastUpdated?: string;
+  parent?: string;
+  icon?: string;
+}
+
+// 目录树节点（用于侧边栏）
+export interface TocItem {
+  level: number;
+  text: string;
+  id: string;
+}
+
+// 文档贡献提交
+export interface DocSubmission {
+  id: number;
+  filename: string;
+  content: string;
+  status: 'pending' | 'approved' | 'rejected';
+  timestamp: string;
 }

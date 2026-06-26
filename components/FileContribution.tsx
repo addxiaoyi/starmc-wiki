@@ -134,7 +134,7 @@ export const FileContribution: React.FC<FileUploadProps> = ({ onUploadSuccess })
         )}
 
         {status === 'success' && (
-          <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex flex-col items-center">
             <CheckCircle size={24} className="text-emerald-500 mb-3" />
             <p className="text-xs font-bold text-emerald-900 dark:text-emerald-400">{message}</p>
             <button 
@@ -147,7 +147,7 @@ export const FileContribution: React.FC<FileUploadProps> = ({ onUploadSuccess })
         )}
 
         {status === 'error' && (
-          <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex flex-col items-center">
             <AlertCircle size={24} className="text-rose-500 mb-3" />
             <p className="text-xs font-bold text-rose-900 dark:text-rose-400">{message}</p>
             <button 
