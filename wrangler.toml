@@ -1,10 +1,6 @@
 # Cloudflare Pages 配置
-# 注意：Cloudflare Pages 不支持 Workers 的 wrangler.toml 字段
-
-# 部署命令会使用 --project-name 参数指定项目
-# 这里只保留兼容性配置
-
+name = "starmc-wiki"
 compatibility_date = "2026-05-05"
 
-# Pages 特定配置 (会被命令行参数覆盖)
+# Pages 特定配置
 pages_build_output_dir = "./dist"
