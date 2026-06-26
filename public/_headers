@@ -1,0 +1,20 @@
+# Cache-Control headers for Cloudflare Pages
+
+# 静态资源 - 长期缓存
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# JavaScript 和 CSS - 长期缓存
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML 文件 - 不缓存
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/wiki/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Markdown 文档 - 长期缓存
+/content/wiki/*
+  Cache-Control: public, max-age=86400

@@ -5,6 +5,20 @@ compatibility_date = "2026-05-05"
 # Cloudflare Pages 配置
 pages_build_output_dir = "./dist"
 
-# Workers 静态部署
+# Workers 静态部署配置
 [assets]
 directory = "./dist"
+browseable = true
+
+# 自定义头部
+[headers]
+  [headers.global]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Cloudflare Pages 函数 (可选的边缘处理)
+# 启用 SSR 功能时可使用
+# main = "./worker.ts"
+# compatibility_flags = ["nodejs_compat"]

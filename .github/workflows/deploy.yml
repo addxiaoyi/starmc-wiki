@@ -6,11 +6,12 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout
@@ -30,8 +31,9 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Install Wrangler
-        run: npm install wrangler
-
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy dist --project-name=starmc-wiki
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=starmc-wiki
