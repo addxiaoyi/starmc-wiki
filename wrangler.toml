@@ -1,24 +1,10 @@
-name = "starmc-wiki"
-account_id = "0f0103845b5e7652f7ff394f2cde3098"
+# Cloudflare Pages 配置
+# 注意：Cloudflare Pages 不支持 Workers 的 wrangler.toml 字段
+
+# 部署命令会使用 --project-name 参数指定项目
+# 这里只保留兼容性配置
+
 compatibility_date = "2026-05-05"
 
-# Cloudflare Pages 配置
+# Pages 特定配置 (会被命令行参数覆盖)
 pages_build_output_dir = "./dist"
-
-# Workers 静态部署配置
-[assets]
-directory = "./dist"
-browseable = true
-
-# 自定义头部
-[headers]
-  [headers.global]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-
-# Cloudflare Pages 函数 (可选的边缘处理)
-# 启用 SSR 功能时可使用
-# main = "./worker.ts"
-# compatibility_flags = ["nodejs_compat"]
